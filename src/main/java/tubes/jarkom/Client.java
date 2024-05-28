@@ -5,6 +5,7 @@ import java.net.*;
 import java.sql.*;
 
 
+//bikin register
 public class Client implements Runnable{
     private Socket clientSocket;
     private BufferedReader input;
