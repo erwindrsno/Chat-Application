@@ -1,14 +1,13 @@
 package tubes.jarkom;
 
+import tubes.jarkom.env.Env;
+
 import java.io.*;
 import java.net.*;
 import java.sql.*;
 
 public class Server {
-    private final static String SERVER_NAME = "localhost";
-    private final static String DB_URL = "jdbc:mysql://localhost:3306/chat_application";
-    private final static String DB_USERNAME = "root";
-    private final static String DB_PASSWORD = "";
+
 
     public static void main(String[] args) throws IOException{
         try{
@@ -24,7 +23,7 @@ public class Server {
 
                 // Class.forName("com.mysql.cj.jdbc.Driver");
 
-                // Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+                // Connection connection = DriverManager.getConnection(Env.getDBUrl(), Env.getDB_USERNAME(), Env.getDB_password());
     
                 // Statement statement = connection.createStatement();
     

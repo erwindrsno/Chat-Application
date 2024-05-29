@@ -2,15 +2,12 @@ package tubes.jarkom;
 
 import java.io.*;
 import java.net.*;
-import java.sql.*;
 
 
 //bikin register
 public class Client implements Runnable{
     private Socket clientSocket;
     private BufferedReader input;
-    private String username;
-    private String password;
     private DataOutputStream outToServer;
 
     @Override
@@ -23,12 +20,6 @@ public class Client implements Runnable{
             System.out.println("Connected to Server and my IP is: " + this.getIpAddress());
 
             this.outToServer = new DataOutputStream(clientSocket.getOutputStream());
-
-            System.out.print("Username : ");
-            this.username = this.input.readLine();
-
-            System.out.print("Password : ");
-            this.password = this.input.readLine();
 
             this.login();
 
@@ -51,8 +42,14 @@ public class Client implements Runnable{
 
     public void login(){
         try{
-            System.out.println("My username is : " + this.username);
-            System.out.println("My pw is : " + this.password);
+            System.out.print("Username : ");
+            String username = this.input.readLine();
+
+            System.out.print("Password : ");
+            String password = this.input.readLine();
+
+            System.out.println("My username is : " + username);
+            System.out.println("My pw is : " + password);
             this.outToServer.writeBytes(username+"\n");
             this.outToServer.writeBytes(password+"\n");
         } catch (Exception e){
