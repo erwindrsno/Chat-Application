@@ -56,4 +56,8 @@ public class Client implements Runnable{
             e.printStackTrace();
         }
     }
+
+    public void register(){
+        
+    }
 }
