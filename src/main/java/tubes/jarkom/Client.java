@@ -1,63 +1,30 @@
 package tubes.jarkom;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
+public class Client {
+    public static void main(String[] args) throws UnknownHostException, IOException {
+        Socket clientSocket = new Socket("127.0.0.1", 6789);
 
-//bikin register
-public class Client implements Runnable{
-    private Socket clientSocket;
-    private BufferedReader input;
-    private DataOutputStream outToServer;
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
-    @Override
-    public void run() {
-        System.out.println(Thread.currentThread().getName() + " is Running!");
-        this.input = new BufferedReader(new InputStreamReader(System.in));
+        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
 
-        try{
-            this.clientSocket = new Socket(this.getIpAddress(), 6789);
-            System.out.println("Connected to Server and my IP is: " + this.getIpAddress());
+        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-            this.outToServer = new DataOutputStream(clientSocket.getOutputStream());
+        System.out.print("Message to Server : ");
 
-            this.login();
+        String Sentence = input.readLine();
 
-            clientSocket.close();
-        }
-        catch(Exception e){
-            System.out.println(e);
-        }
-    }
+        outToServer.writeBytes(Sentence + '\n');
 
-    public String getIpAddress(){
-        try {
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            return inetAddress.getHostAddress();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            return "failed to return IP";
-        }
-    }
+        String received = inFromServer.readLine();
 
-    public void login(){
-        try{
-            System.out.print("Username : ");
-            String username = this.input.readLine();
-
-            System.out.print("Password : ");
-            String password = this.input.readLine();
-
-            System.out.println("My username is : " + username);
-            System.out.println("My pw is : " + password);
-            this.outToServer.writeBytes(username+"\n");
-            this.outToServer.writeBytes(password+"\n");
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    public void register(){
-        
+        System.out.println("Server : " +received);
     }
 }

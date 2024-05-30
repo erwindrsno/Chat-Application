@@ -7,33 +7,21 @@ import java.net.*;
 import java.sql.*;
 
 public class Server {
-
-
     public static void main(String[] args) throws IOException{
         try{
             ServerSocket socket = new ServerSocket(6789);
             while(true){
                 Socket connectionSocket = socket.accept();
 
-                BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+                Thread clientHandler = new Thread(new ClientHandler(connectionSocket), "Client 1");
+                clientHandler.start();
 
-                String clientInput = inFromClient.readLine();
+                // BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
-                System.out.println("Client input is : " + clientInput);
+                // String clientInput = inFromClient.readLine();
 
-                // Class.forName("com.mysql.cj.jdbc.Driver");
+                // System.out.println("Client input is : " + clientInput);
 
-                // Connection connection = DriverManager.getConnection(Env.getDBUrl(), Env.getDB_USERNAME(), Env.getDB_password());
-    
-                // Statement statement = connection.createStatement();
-    
-                // String query = "SELECT * FROM USERS";
-    
-                // ResultSet res = statement.executeQuery(query);
-    
-                // while(res.next()){
-                //     System.out.println(res.getInt(1) + " " + res.getString(2) + " " + res.getString(3) + " " + res.getString(4));
-                // }
                 // connection.close();
             }
         }
