@@ -81,7 +81,7 @@ public class ClientHandler implements Runnable{
 
             // System.out.println(query);
 
-            if(this.execute_query(query) != null){
+            if(this.execute_query(query) == null){
                 // this.user.setLoggedIn(true);
                 System.out.println("failed to log in");
             }
@@ -98,6 +98,15 @@ public class ClientHandler implements Runnable{
             String hashedPassword = Hashing.sha256()
                 .hashString(user.getPassword(), StandardCharsets.UTF_8)
                 .toString();
+
+            // StringBuilder queryBuilder = new StringBuilder("INSERT INTO users (name, username, password) VALUE (',?,?'")
+            //     .replace(52, 53, this.user.getUsername())
+            //     .replace(54, 55, this.user.getPassword())
+            //     .replace(56, 57, this.user.getName());
+
+            // String query = queryBuilder.toString();
+
+            // System.out.println(query);
 
             String query = "INSERT INTO users (name, username, password) VALUES ('"+this.user.getName()+"', '"+this.user.getUsername()+"', '"+hashedPassword+"');";
 
@@ -120,9 +129,6 @@ public class ClientHandler implements Runnable{
     public ResultSet execute_query(String query){
         try{
             ResultSet res = this.statement.executeQuery(query);
-            while(res.next()){
-                System.out.println(res.getInt(1) + " " + res.getString(2) + " " + res.getString(3) + " " + res.getString(4));
-            }
             return res;
         } catch(Exception e){
             e.printStackTrace();

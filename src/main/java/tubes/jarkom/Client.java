@@ -23,36 +23,51 @@ public class Client {
 
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
-        // DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
-
         OutputStream output = clientSocket.getOutputStream();
         PrintWriter writer = new PrintWriter(output,true);
 
-        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        System.out.print("Action : ");
+        String action = input.readLine();
 
-        System.out.print("Username : ");
+        if(action.equals("register")){
+            System.out.println("==REGISTER==");
+            System.out.print("Username : ");
 
-        String username = input.readLine();
+            String username = input.readLine();
+    
+            System.out.print("Password : ");
+    
+            String password = input.readLine();
 
-        System.out.print("Password : ");
+            System.out.print("Name : ");
 
-        String password = input.readLine();
+            String name = input.readLine();
 
-        // System.out.print("Name : ");
+            User user1 = new User(username, password, name);
 
-        // String name = input.readLine();
+            user1.setAction("register");
 
-        // User user1 = new User(username,password,name);
+            String jsonMessage = gson.toJson(user1);
 
-        // user1.setAction("register");
+            writer.println(jsonMessage);
+        }
+        else if(action.equals("login")){
+            System.out.print("Username : ");
 
-        User user1 = new User(username, password);
+            String username = input.readLine();
+    
+            System.out.print("Password : ");
+    
+            String password = input.readLine();
 
-        user1.setAction("login");
+            User user1 = new User(username, password);
 
-        String jsonMessage = gson.toJson(user1);
+            user1.setAction("login");
 
-        writer.println(jsonMessage);
+            String jsonMessage = gson.toJson(user1);
+
+            writer.println(jsonMessage);
+        }
 
         // String received = inFromServer.readLine();
 
