@@ -8,7 +8,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Client {
+
     public static void main(String[] args) throws UnknownHostException, IOException {
+        //127.0.0.1 ip server
         Socket clientSocket = new Socket("127.0.0.1", 6789);
 
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
@@ -26,5 +28,9 @@ public class Client {
         String received = inFromServer.readLine();
 
         System.out.println("Server : " +received);
+    }
+
+    public void login(String username, String password){
+        
     }
 }

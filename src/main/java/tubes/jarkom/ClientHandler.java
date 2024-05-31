@@ -1,7 +1,9 @@
 package tubes.jarkom;
 
+import tubes.jarkom.env.Env;
 import java.io.*;
 import java.net.*;
+import java.sql.*;
 import java.util.Enumeration;
 
 
@@ -29,6 +31,9 @@ public class ClientHandler implements Runnable{
             String clientSentence = inFromClient.readLine();
 
             outToClient.writeBytes(clientSentence.toUpperCase()+"\n");
+
+            connectDB();
+
             // this.outToServer = new DataOutputStream(clientSocket.getOutputStream());
 
             // this.login();
@@ -36,6 +41,26 @@ public class ClientHandler implements Runnable{
             // clientSocket.close();
         }
         catch(Exception e){
+            System.out.println(e);
+        }
+    }
+
+    public void connectDB(){
+        try{
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            Connection connection = DriverManager.getConnection(Env.getDBUrl(), Env.getDB_USERNAME(), Env.getDB_password());
+    
+            Statement statement = connection.createStatement();
+    
+            String query = "SELECT * FROM USERS";
+    
+            ResultSet res = statement.executeQuery(query);
+    
+            while(res.next()){
+                System.out.println(res.getInt(1) + " " + res.getString(2) + " " + res.getString(3) + " " + res.getString(4));
+            }
+        } catch(Exception e){
             System.out.println(e);
         }
     }
@@ -68,23 +93,6 @@ public class ClientHandler implements Runnable{
     //     }
     //     return "failed";
     // }
-
-    public void login(){
-        try{
-            System.out.print("Username : ");
-            String username = this.input.readLine();
-
-            System.out.print("Password : ");
-            String password = this.input.readLine();
-
-            System.out.println("My username is : " + username);
-            System.out.println("My pw is : " + password);
-            this.outToServer.writeBytes(username+"\n");
-            this.outToServer.writeBytes(password+"\n");
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
 
     public void register(){
 

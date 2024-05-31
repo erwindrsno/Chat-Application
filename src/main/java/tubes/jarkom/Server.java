@@ -1,7 +1,5 @@
 package tubes.jarkom;
 
-import tubes.jarkom.env.Env;
-
 import java.io.*;
 import java.net.*;
 import java.sql.*;
