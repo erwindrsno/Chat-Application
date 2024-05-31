@@ -72,12 +72,29 @@ public class ClientHandler implements Runnable{
     }
 
     public void login(){
+        try{
+            String hashedPassword = Hashing.sha256()
+                .hashString(user.getPassword(), StandardCharsets.UTF_8)
+                .toString();
 
+            String query = "SELECT * FROM users WHERE username='" + this.user.getUsername() + "' && password ='"+hashedPassword+"'";
+
+            // System.out.println(query);
+
+            if(this.execute_query(query) != null){
+                // this.user.setLoggedIn(true);
+                System.out.println("failed to log in");
+            }
+            else{
+                System.out.println("OK 200");
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void register(){
         try{
-
             String hashedPassword = Hashing.sha256()
                 .hashString(user.getPassword(), StandardCharsets.UTF_8)
                 .toString();
@@ -100,13 +117,17 @@ public class ClientHandler implements Runnable{
         return false;
     }
 
-    public void execute_query(String query){
+    public ResultSet execute_query(String query){
         try{
             ResultSet res = this.statement.executeQuery(query);
-            System.out.println(res);
+            while(res.next()){
+                System.out.println(res.getInt(1) + " " + res.getString(2) + " " + res.getString(3) + " " + res.getString(4));
+            }
+            return res;
         } catch(Exception e){
             e.printStackTrace();
         }
+        return null;
     }
 
     // public String getMyLocalIPAddress(){

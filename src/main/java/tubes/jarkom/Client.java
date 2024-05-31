@@ -38,13 +38,17 @@ public class Client {
 
         String password = input.readLine();
 
-        System.out.print("Name : ");
+        // System.out.print("Name : ");
 
-        String name = input.readLine();
+        // String name = input.readLine();
 
-        User user1 = new User(username,password,name);
+        // User user1 = new User(username,password,name);
 
-        user1.setAction("register");
+        // user1.setAction("register");
+
+        User user1 = new User(username, password);
+
+        user1.setAction("login");
 
         String jsonMessage = gson.toJson(user1);
 
