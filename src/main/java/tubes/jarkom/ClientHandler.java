@@ -52,26 +52,6 @@ public class ClientHandler implements Runnable{
                 default:
                   // code block
             }
-
-            // System.out.println("Username nya adalah : " + user.getUsername());
-
-            // System.out.println("Password nya adalah : " + user.getPassword());
-
-            // System.out.println("Action nya adalah : " + user.getAction());
-
-            // DataOutputStream outToClient = new DataOutputStream(this.socket.getOutputStream());
-
-            // String clientSentence = inFromClient.readLine();
-
-            // outToClient.writeBytes(clientSentence.toUpperCase()+"\n");
-
-            // connectDB();
-
-            // this.outToServer = new DataOutputStream(clientSocket.getOutputStream());
-
-            // this.login();
-
-            // clientSocket.close();
         }
         catch(Exception e){
             System.out.println(e);
