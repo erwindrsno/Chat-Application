@@ -1,20 +1,18 @@
 package tubes.jarkom.model;
 
-public class User implements Action {
+public class User{
     private String username;
     private String password;
     private String name;
+    private int userCount;
+    private boolean isLoggedIn;
     String actionName;
 
     public User(String username, String password){
         this.username = username;
         this.password = password;
-    }
-
-    public User(String username, String password, String name){
-        this.username = username;
-        this.password = password;
-        this.name = name;
+        this.isLoggedIn = false;
+        userCount++;
     }
 
     public void setUsername(String username){
@@ -41,13 +39,22 @@ public class User implements Action {
         return this.name;
     }
 
-    @Override
-    public void setAction(String actionName) {
-        this.actionName = actionName;
+    public void setIsLoggedIn(boolean isLoggedIn){
+        this.isLoggedIn = isLoggedIn;
     }
 
-    @Override
-    public String getAction() {
-        return this.actionName;
+    public boolean getIsLoggedIn(){
+        return this.isLoggedIn;
     }
+
+
+    // @Override
+    // public void setAction(String actionName) {
+    //     this.actionName = actionName;
+    // }
+
+    // @Override
+    // public String getAction() {
+    //     return this.actionName;
+    // }
 }
