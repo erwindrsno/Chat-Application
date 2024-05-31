@@ -1,20 +1,28 @@
 package tubes.jarkom;
 
 import tubes.jarkom.env.Env;
+import tubes.jarkom.model.User;
+
 import java.io.*;
 import java.net.*;
 import java.sql.*;
 import java.util.Enumeration;
 
+import com.google.gson.Gson;
 
 //bikin register
 public class ClientHandler implements Runnable{
     private Socket socket;
-    private BufferedReader input;
+    private Gson gson;
     private DataOutputStream outToServer;
+    private BufferedReader inFromClient;
+    private User user;
+    private Connection connection;
+    private Statement statement;
 
     public ClientHandler(Socket socket){
         this.socket = socket;
+        this.gson = new Gson();
     }
 
     @Override
@@ -22,17 +30,40 @@ public class ClientHandler implements Runnable{
         System.out.println(Thread.currentThread().getName() + " is Running!");
 
         try{
-            System.out.println("Connected to Server and my IP is: " + this.getMyLocalIPAddress());
+            this.inFromClient = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+            // System.out.println("Connected to Server and my IP is: " + this.getMyLocalIPAddress());
 
-            BufferedReader inFromClient = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+            String jsonMessage = inFromClient.readLine();
 
-            DataOutputStream outToClient = new DataOutputStream(this.socket.getOutputStream());
-
-            String clientSentence = inFromClient.readLine();
-
-            outToClient.writeBytes(clientSentence.toUpperCase()+"\n");
+            this.user = this.gson.fromJson(jsonMessage, User.class);
 
             connectDB();
+
+            switch(user.getAction()) {
+                case "login":
+                    this.login();
+                    break;
+
+                case "register":
+                    this.register();
+                    break;
+                default:
+                  // code block
+            }
+
+            // System.out.println("Username nya adalah : " + user.getUsername());
+
+            // System.out.println("Password nya adalah : " + user.getPassword());
+
+            // System.out.println("Action nya adalah : " + user.getAction());
+
+            // DataOutputStream outToClient = new DataOutputStream(this.socket.getOutputStream());
+
+            // String clientSentence = inFromClient.readLine();
+
+            // outToClient.writeBytes(clientSentence.toUpperCase()+"\n");
+
+            // connectDB();
 
             // this.outToServer = new DataOutputStream(clientSocket.getOutputStream());
 
@@ -49,31 +80,52 @@ public class ClientHandler implements Runnable{
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            Connection connection = DriverManager.getConnection(Env.getDBUrl(), Env.getDB_USERNAME(), Env.getDB_password());
+            this.connection = DriverManager.getConnection(Env.getDBUrl(), Env.getDB_USERNAME(), Env.getDB_password());
     
-            Statement statement = connection.createStatement();
-    
-            String query = "SELECT * FROM USERS";
-    
-            ResultSet res = statement.executeQuery(query);
-    
-            while(res.next()){
-                System.out.println(res.getInt(1) + " " + res.getString(2) + " " + res.getString(3) + " " + res.getString(4));
-            }
+            this.statement = connection.createStatement();
+
         } catch(Exception e){
             System.out.println(e);
         }
     }
 
-    public String getMyLocalIPAddress(){
-        try {
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            return inetAddress.getHostAddress();
-        } catch (UnknownHostException e) {
+    public void login(){
+
+    }
+
+    public void register(){
+        try{
+            String query = "INSERT INTO users (name, username, password) VALUES ('"+this.user.getName()+"', '"+this.user.getUsername()+"', '"+this.user.getPassword()+"');";
+
+            System.out.println(query);
+
+            this.execute_query(query);
+        } catch (Exception e){
             e.printStackTrace();
-            return "failed to return IP";
         }
     }
+
+    public void execute_query(String query){
+        try{
+            int res = this.statement.executeUpdate(query);
+            System.out.println(res);
+            // while(res.next()){
+            //     System.out.println(res.getInt(1) + " " + res.getString(2) + " " + res.getString(3) + " " + res.getString(4));
+            // }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    // public String getMyLocalIPAddress(){
+    //     try {
+    //         InetAddress inetAddress = InetAddress.getLocalHost();
+    //         return inetAddress.getHostAddress();
+    //     } catch (UnknownHostException e) {
+    //         e.printStackTrace();
+    //         return "failed to return IP";
+    //     }
+    // }
 
     // public String getIPAddress(){
     //     try {
@@ -93,8 +145,4 @@ public class ClientHandler implements Runnable{
     //     }
     //     return "failed";
     // }
-
-    public void register(){
-
-    }
 }
