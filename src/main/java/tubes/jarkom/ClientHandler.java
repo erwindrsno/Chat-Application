@@ -5,9 +5,11 @@ import tubes.jarkom.model.User;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.Enumeration;
 
+import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
 
 //bikin register
@@ -95,23 +97,33 @@ public class ClientHandler implements Runnable{
 
     public void register(){
         try{
-            String query = "INSERT INTO users (name, username, password) VALUES ('"+this.user.getName()+"', '"+this.user.getUsername()+"', '"+this.user.getPassword()+"');";
 
-            System.out.println(query);
+            String hashedPassword = Hashing.sha256()
+                .hashString(user.getPassword(), StandardCharsets.UTF_8)
+                .toString();
 
-            this.execute_query(query);
+            String query = "INSERT INTO users (name, username, password) VALUES ('"+this.user.getName()+"', '"+this.user.getUsername()+"', '"+hashedPassword+"');";
+
+            System.out.println(this.execute_update(query));
         } catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public void execute_query(String query){
+    public boolean execute_update(String query){
         try{
             int res = this.statement.executeUpdate(query);
+            if (res == 1) return true;
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void execute_query(String query){
+        try{
+            ResultSet res = this.statement.executeQuery(query);
             System.out.println(res);
-            // while(res.next()){
-            //     System.out.println(res.getInt(1) + " " + res.getString(2) + " " + res.getString(3) + " " + res.getString(4));
-            // }
         } catch(Exception e){
             e.printStackTrace();
         }

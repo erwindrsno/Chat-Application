@@ -40,6 +40,13 @@
         <version>2.11.0</version>
     </dependency>
 
+    <!-- https://www.baeldung.com/sha-256-hashing-java -->
+    <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>32.1.3-jre</version>
+    </dependency>
+
   </dependencies>
 
   <build>
