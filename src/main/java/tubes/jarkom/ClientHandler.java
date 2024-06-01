@@ -2,7 +2,9 @@ package tubes.jarkom;
 
 import tubes.jarkom.env.Env;
 import tubes.jarkom.model.Request;
+import tubes.jarkom.model.Room;
 import tubes.jarkom.model.User;
+import tubes.jarkom.model.Response;
 
 import java.io.*;
 import java.net.*;
@@ -47,13 +49,14 @@ public class ClientHandler implements Runnable{
         try{
             String jsonMessage = inFromClient.readLine();
 
+            //not using generic due to request generic class may varies.
             @SuppressWarnings("rawtypes")
             Request request = this.gson.fromJson(jsonMessage, Request.class);
 
             connectDB();
 
-            //because to to deserialize, the data must be always a String, therefore .toString() method is used.
-            //since above code is receiving the rawtype non generics.
+            //since above request is receiving the rawtype non generics object. Compiler doesnt know that the data is String.
+            //Hence .toString() method is used.
             switch(request.getAction()){
                 case "login":
                     this.user = this.gson.fromJson(request.getData().toString(), User.class);
@@ -64,23 +67,10 @@ public class ClientHandler implements Runnable{
                     this.user = this.gson.fromJson(request.getData().toString(), User.class);
                     this.register();
                     break;
+
+                case "createRoom":
+                    this.createRoom(null);
             }
-
-            // switch(user.getAction()) {
-            //     case "login":
-            //         this.login();
-            //         break;
-
-            //     case "register":
-            //         this.register();
-            //         break;
-
-            //     case "createRoom":
-            //         this.createRoom();
-            //         break;
-            //     default:
-            //       // code block
-            // }
         }
         catch(Exception e){
             System.out.println(e);
@@ -106,11 +96,15 @@ public class ClientHandler implements Runnable{
                 .hashString(user.getPassword(), StandardCharsets.UTF_8)
                 .toString();
 
-            String query = "SELECT * FROM users WHERE username='" + this.user.getUsername() + "' && password ='"+hashedPassword+"'";
+            String query = "SELECT * FROM users WHERE username='" + user.getUsername() + "' && password ='"+hashedPassword+"'";
 
             if(this.execute_query(query) != null){
                 this.user.setIsLoggedIn(true);
                 System.out.println("login sukses 200");
+
+                Response<String> res = new Response<>("200");
+
+                writer.println(res.getData());
             }
             else{
                 this.user.setIsLoggedIn(false);
@@ -142,7 +136,7 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    public void createRoom(){
+    public void createRoom(Room room){
         try{
             System.out.println("masuk create room");
         }
@@ -170,33 +164,4 @@ public class ClientHandler implements Runnable{
         }
         return null;
     }
-
-    // public String getMyLocalIPAddress(){
-    //     try {
-    //         InetAddress inetAddress = InetAddress.getLocalHost();
-    //         return inetAddress.getHostAddress();
-    //     } catch (UnknownHostException e) {
-    //         e.printStackTrace();
-    //         return "failed to return IP";
-    //     }
-    // }
-
-    // public String getIPAddress(){
-    //     try {
-    //         Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-    //         while (networkInterfaces.hasMoreElements()) {
-    //             NetworkInterface networkInterface = networkInterfaces.nextElement();
-    //             Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
-    //             while (inetAddresses.hasMoreElements()) {
-    //                 InetAddress inetAddress = inetAddresses.nextElement();
-    //                 if (!inetAddress.isLoopbackAddress() && inetAddress.isSiteLocalAddress()) {
-    //                     return inetAddress.getHostAddress();
-    //                 }
-    //             }
-    //         }
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    //     return "failed";
-    // }
 }

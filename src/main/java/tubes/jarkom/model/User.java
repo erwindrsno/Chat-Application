@@ -15,13 +15,6 @@ public class User{
         userCount++;
     }
 
-    // public User(String username, String password, String name){
-    //     this.username = username;
-    //     this.password = password;
-    //     this.isLoggedIn = false;
-    //     userCount++;
-    // }
-
     public void setUsername(String username){
         this.username = username;
     }

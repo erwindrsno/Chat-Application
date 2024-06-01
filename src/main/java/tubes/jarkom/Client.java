@@ -20,6 +20,7 @@ import tubes.jarkom.model.Room;
 import tubes.jarkom.model.User;
 
 public class Client {
+    private static boolean isLoggedIn = false;
 
     public static void main(String[] args) throws UnknownHostException, IOException {
         //Socket(server ip, server port)
@@ -81,6 +82,13 @@ public class Client {
 
             writer.println(jsonMessage);
 
+            String response = readInputFromServer.readLine();
+
+            System.out.println(response);
+
+
+            // System.out.println(user1.getIsLoggedIn());
+
             // System.out.println(user1.getIsLoggedIn());
 
             // if(!user1.getIsLoggedIn()){
@@ -98,22 +106,20 @@ public class Client {
 
             // writer.println(jsonRoomMessage);
         }
-        // else if(action.equals("create")){
-        //     if(!user1.getIsLoggedIn()){
-        //         System.out.println("You must login first");
-        //     }
-        //     System.out.print("Room name : ");
+        else if(action.equals("create")){
+            // if(!user1.getIsLoggedIn()){
+            //     System.out.println("You must login first");
+            // }
+            System.out.print("Room name : ");
 
-        //     String room_name = input.readLine();
+            String room_name = input.readLine();
 
-        //     // user1.setAction("createRoom");
+            // Request<String> req = new Request<>("login", gson.toJson(user1));
 
-        //     Room room1 = new Room(user1.getName(), room_name);
+            // String jsonMessage = gson.toJson(req);
 
-        //     String jsonMessage = gson.toJson(room1);
-
-        //     writer.println(jsonMessage);
-        // }
+            // writer.println(jsonMessage);
+        }
     }
 
         // String received = inFromServer.readLine();
