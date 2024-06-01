@@ -20,7 +20,6 @@ import tubes.jarkom.model.Room;
 import tubes.jarkom.model.User;
 
 public class Client {
-    private static User user1;
 
     public static void main(String[] args) throws UnknownHostException, IOException {
         //Socket(server ip, server port)
@@ -54,12 +53,14 @@ public class Client {
 
             String name = input.readLine();
 
-            user1 = new User(username, password);
+            User user1 = new User(username, password);
 
             user1.setName(name);
             // user1.setAction("register");
 
-            String jsonMessage = gson.toJson(user1);
+            Request<String> req = new Request<>("register", gson.toJson(user1));
+
+            String jsonMessage = gson.toJson(req);
 
             writer.println(jsonMessage);
         }
@@ -74,7 +75,7 @@ public class Client {
 
             User user1 = new User(username, password);
 
-            Request<User> req = new Request<>("login", user1);
+            Request<String> req = new Request<>("login", gson.toJson(user1));
 
             String jsonMessage = gson.toJson(req);
 
@@ -97,22 +98,22 @@ public class Client {
 
             // writer.println(jsonRoomMessage);
         }
-        else if(action.equals("create")){
-            if(!user1.getIsLoggedIn()){
-                System.out.println("You must login first");
-            }
-            System.out.print("Room name : ");
+        // else if(action.equals("create")){
+        //     if(!user1.getIsLoggedIn()){
+        //         System.out.println("You must login first");
+        //     }
+        //     System.out.print("Room name : ");
 
-            String room_name = input.readLine();
+        //     String room_name = input.readLine();
 
-            // user1.setAction("createRoom");
+        //     // user1.setAction("createRoom");
 
-            Room room1 = new Room(user1.getName(), room_name);
+        //     Room room1 = new Room(user1.getName(), room_name);
 
-            String jsonMessage = gson.toJson(room1);
+        //     String jsonMessage = gson.toJson(room1);
 
-            writer.println(jsonMessage);
-        }
+        //     writer.println(jsonMessage);
+        // }
     }
 
         // String received = inFromServer.readLine();

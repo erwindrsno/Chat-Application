@@ -22,6 +22,8 @@ public class ClientHandler implements Runnable{
     private PrintWriter writer;
     private OutputStream output;
 
+    private User user;
+
     private Connection connection;
     private Statement statement;
 
@@ -45,20 +47,24 @@ public class ClientHandler implements Runnable{
         try{
             String jsonMessage = inFromClient.readLine();
 
-            // this.user = this.gson.fromJson(jsonMessage, User.class);
             @SuppressWarnings("rawtypes")
             Request request = this.gson.fromJson(jsonMessage, Request.class);
 
-            Request<User> data = this.gson.fromJson(jsonMessage, Request.class);
+            connectDB();
 
-            System.out.println(data.getData());
+            //because to to deserialize, the data must be always a String, therefore .toString() method is used.
+            //since above code is receiving the rawtype non generics.
+            switch(request.getAction()){
+                case "login":
+                    this.user = this.gson.fromJson(request.getData().toString(), User.class);
+                    this.login();
+                    break;
 
-            // switch(request.getAction()){
-            //     case "login":
-            //         this.login(request);
-            // }
-
-            // connectDB();
+                case "register":
+                    this.user = this.gson.fromJson(request.getData().toString(), User.class);
+                    this.register();
+                    break;
+            }
 
             // switch(user.getAction()) {
             //     case "login":
@@ -94,46 +100,47 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    // public void login(){
-    //     try{
-    //         String hashedPassword = Hashing.sha256()
-    //             .hashString(user.getPassword(), StandardCharsets.UTF_8)
-    //             .toString();
+    public void login(){
+        try{
+            String hashedPassword = Hashing.sha256()
+                .hashString(user.getPassword(), StandardCharsets.UTF_8)
+                .toString();
 
-    //         String query = "SELECT * FROM users WHERE username='" + this.user.getUsername() + "' && password ='"+hashedPassword+"'";
+            String query = "SELECT * FROM users WHERE username='" + this.user.getUsername() + "' && password ='"+hashedPassword+"'";
 
-    //         if(this.execute_query(query) != null){
-    //             this.user.setIsLoggedIn(true);
-    //         }
-    //         else{
-    //             this.user.setIsLoggedIn(false);
-    //         }
-    //     } catch (Exception e){
-    //         e.printStackTrace();
-    //     }
-    // }
+            if(this.execute_query(query) != null){
+                this.user.setIsLoggedIn(true);
+                System.out.println("login sukses 200");
+            }
+            else{
+                this.user.setIsLoggedIn(false);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
-    // public void register(){
-    //     try{
-    //         String hashedPassword = Hashing.sha256()
-    //             .hashString(user.getPassword(), StandardCharsets.UTF_8)
-    //             .toString();
-    //         // StringBuilder queryBuilder = new StringBuilder("INSERT INTO users (name, username, password) VALUE (',?,?'")
-    //         //     .replace(52, 53, this.user.getUsername())
-    //         //     .replace(54, 55, this.user.getPassword())
-    //         //     .replace(56, 57, this.user.getName());
+    public void register(){
+        try{
+            String hashedPassword = Hashing.sha256()
+                .hashString(user.getPassword(), StandardCharsets.UTF_8)
+                .toString();
+            // StringBuilder queryBuilder = new StringBuilder("INSERT INTO users (name, username, password) VALUE (',?,?'")
+            //     .replace(52, 53, this.user.getUsername())
+            //     .replace(54, 55, this.user.getPassword())
+            //     .replace(56, 57, this.user.getName());
 
-    //         // String query = queryBuilder.toString();
+            // String query = queryBuilder.toString();
 
-    //         // System.out.println(query);
+            // System.out.println(query);
 
-    //         String query = "INSERT INTO users (name, username, password) VALUES ('"+this.user.getName()+"', '"+this.user.getUsername()+"', '"+hashedPassword+"');";
+            String query = "INSERT INTO users (name, username, password) VALUES ('"+this.user.getName()+"', '"+this.user.getUsername()+"', '"+hashedPassword+"');";
 
-    //         System.out.println(this.execute_update(query));
-    //     } catch (Exception e){
-    //         e.printStackTrace();
-    //     }
-    // }
+            System.out.println(this.execute_update(query));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     public void createRoom(){
         try{
