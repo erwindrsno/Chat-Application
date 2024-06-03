@@ -42,6 +42,8 @@ public class ClientHandler implements Runnable{
             this.output = this.socket.getOutputStream();
             this.writer = new PrintWriter(output, true);
             this.inFromClient = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+
+            connectDB();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -53,8 +55,6 @@ public class ClientHandler implements Runnable{
                 //not using generic due to request generic class may varies.
                 @SuppressWarnings("rawtypes")
                 Request request = this.gson.fromJson(jsonMessage, Request.class);
-    
-                connectDB();
     
                 //since above request is receiving the rawtype non generics object. Compiler doesnt know that the data is String.
                 //Hence .toString() method is used.
