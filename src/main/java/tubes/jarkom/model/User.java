@@ -4,6 +4,7 @@ public class User{
     private String username;
     private String password;
     private String name;
+    private int id;
     private int userCount;
     private boolean isLoggedIn;
     String actionName;
@@ -37,6 +38,14 @@ public class User{
 
     public String getName(){
         return this.name;
+    }
+
+    public void setId(int id){
+        this.id = id;
+    }
+
+    public int getId(){
+        return this.id;
     }
 
     public void setIsLoggedIn(boolean isLoggedIn){
