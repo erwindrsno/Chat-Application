@@ -86,6 +86,10 @@ public class Client {
 
             System.out.println(response);
 
+            if(response.equals("200")){
+                isLoggedIn = true;
+            }
+
 
             // System.out.println(user1.getIsLoggedIn());
 
