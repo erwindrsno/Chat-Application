@@ -104,7 +104,7 @@ public class ClientHandler implements Runnable{
 
                 Response<String> res = new Response<>("200");
 
-                writer.println(res.getData());
+                writer.println(gson.toJson(res));
             }
             else{
                 this.user.setIsLoggedIn(false);
@@ -119,18 +119,16 @@ public class ClientHandler implements Runnable{
             String hashedPassword = Hashing.sha256()
                 .hashString(user.getPassword(), StandardCharsets.UTF_8)
                 .toString();
-            // StringBuilder queryBuilder = new StringBuilder("INSERT INTO users (name, username, password) VALUE (',?,?'")
-            //     .replace(52, 53, this.user.getUsername())
-            //     .replace(54, 55, this.user.getPassword())
-            //     .replace(56, 57, this.user.getName());
-
-            // String query = queryBuilder.toString();
-
-            // System.out.println(query);
 
             String query = "INSERT INTO users (name, username, password) VALUES ('"+this.user.getName()+"', '"+this.user.getUsername()+"', '"+hashedPassword+"');";
 
-            System.out.println(this.execute_update(query));
+            if(this.execute_update(query)){
+                System.out.println("register sukses 201");
+
+                Response<String> res = new Response<>("201");
+
+                writer.println(gson.toJson(res));
+            }
         } catch (Exception e){
             e.printStackTrace();
         }
