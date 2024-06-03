@@ -14,10 +14,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.google.common.hash.Hashing;
-import com.google.common.util.concurrent.ExecutionError;
 import com.google.gson.Gson;
 
-//bikin register
 public class ClientHandler implements Runnable{
     private Socket socket;
     private Gson gson;
@@ -152,12 +150,6 @@ public class ClientHandler implements Runnable{
         catch(Exception e){
             e.printStackTrace();
         }
-    }
-
-    public void logOut() throws Exception{
-        this.user.setIsLoggedIn(false);
-        this.user = null;
-        this.socket.close();
     }
 
     public boolean execute_update(String query){
