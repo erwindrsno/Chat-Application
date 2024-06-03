@@ -143,6 +143,9 @@ public class Client {
         Response<String> res = gson.fromJson(response, Response.class);
 
         System.out.println(res.getData());
+
+        //set user to null so user must login once registered.
+        user = null;
     }
 
     public static void createRoom() throws IOException{
