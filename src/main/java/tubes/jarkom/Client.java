@@ -109,6 +109,10 @@ public class Client {
             Response<String> res = gson.fromJson(response, Response.class);
     
             System.out.println(res.getData());
+
+            if(res.getData().equals("401")){
+                user = null;
+            }
         }
         catch(Exception e){
             e.printStackTrace();

@@ -96,21 +96,26 @@ public class ClientHandler implements Runnable{
 
         ResultSet queryRes = this.execute_query(query);
 
-        if(queryRes != null){
+        Response<String> res;
+
+        //.next() method move the cursor for one index.
+        if(queryRes.next()){
+            System.out.println(this.user.getName() + " has logged in");
             this.user.setIsLoggedIn(true);
-            // System.out.println("login sukses 200");
 
-            while(queryRes.next()){
+            do{
                 this.user.setId(queryRes.getInt(1));
-            }
+            } while(queryRes.next());
 
-            Response<String> res = new Response<>("200");
-
-            writer.println(gson.toJson(res));
+            res = new Response<>("200");
+            System.out.println(this.user.getId());
         }
         else{
+            res = new Response<>("401");
             this.user.setIsLoggedIn(false);
         }
+
+        writer.println(gson.toJson(res));
     }
 
     public void register() throws Exception{
@@ -120,13 +125,17 @@ public class ClientHandler implements Runnable{
 
         String query = "INSERT INTO users (name, username, password) VALUES ('"+this.user.getName()+"', '"+this.user.getUsername()+"', '"+hashedPassword+"');";
 
+        Response<String> res;
+
         if(this.execute_update(query)){
-            System.out.println("register sukses 201");
+            System.out.println("register OK 201");
 
-            Response<String> res = new Response<>("201");
-
-            writer.println(gson.toJson(res));
+            res = new Response<>("201");
         }
+        else{
+            res = new Response<>("500");
+        }
+        writer.println(gson.toJson(res));
     }
 
     public void createRoom(Room room) throws Exception{
@@ -137,7 +146,7 @@ public class ClientHandler implements Runnable{
             String query = "INSERT INTO rooms (name, owner_id, created_at) VALUES ('"+room.getName()+"', '"+this.user.getId()+"', '"+ created_at +"');";
 
             if(this.execute_update(query)){
-                System.out.println("create room sukses 201");
+                System.out.println("create room OK 201");
 
                 Response<String> res = new Response<>(room.getName() + " has been created at " + created_at);
 
