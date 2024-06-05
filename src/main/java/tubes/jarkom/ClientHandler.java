@@ -139,25 +139,20 @@ public class ClientHandler implements Runnable{
     }
 
     public void createRoom(Room room) throws Exception{
-        try{
-            SimpleDateFormat ft = new SimpleDateFormat("dd-MM-yyyy"); 
-            String created_at = ft.format(new Date());
+        SimpleDateFormat ft = new SimpleDateFormat("dd-MM-yyyy"); 
+        String created_at = ft.format(new Date());
 
-            String query = "INSERT INTO rooms (name, owner_id, created_at) VALUES ('"+room.getName()+"', '"+this.user.getId()+"', '"+ created_at +"');";
+        String query = "INSERT INTO rooms (name, owner_id, created_at) VALUES ('"+room.getName()+"', '"+this.user.getId()+"', '"+ created_at +"');";
 
-            if(this.execute_update(query)){
-                System.out.println("create room OK 201");
+        if(this.execute_update(query)){
+            System.out.println("create room OK 201");
 
-                Response<String> res = new Response<>(room.getName() + " has been created at " + created_at);
+            Response<String> res = new Response<>(room.getName() + " has been created at " + created_at);
 
-                writer.println(gson.toJson(res));
-            }
-            else{
-                System.out.println("failed :(");
-            }
+            writer.println(gson.toJson(res));
         }
-        catch(Exception e){
-            e.printStackTrace();
+        else{
+            System.out.println("failed :(");
         }
     }
 
