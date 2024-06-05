@@ -99,7 +99,9 @@ public class ClientHandler implements Runnable{
         Response<String> res;
 
         //.next() method move the cursor for one index.
+        //set name because during login, the object that is send by client doesnt have name inside the user object.
         if(queryRes.next()){
+            this.user.setName(queryRes.getString(2));
             System.out.println(this.user.getName() + " has logged in");
             this.user.setIsLoggedIn(true);
 
@@ -108,7 +110,6 @@ public class ClientHandler implements Runnable{
             } while(queryRes.next());
 
             res = new Response<>("200");
-            System.out.println(this.user.getId());
         }
         else{
             res = new Response<>("401");
