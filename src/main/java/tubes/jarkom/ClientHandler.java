@@ -82,7 +82,7 @@ public class ClientHandler implements Runnable{
     public void connectDB() throws Exception{
         Class.forName("com.mysql.cj.jdbc.Driver");
 
-        this.connection = DriverManager.getConnection(Env.getDBUrl(), Env.getDB_USERNAME(), Env.getDB_PASSWORD());
+        this.connection = DriverManager.getConnection(Env.getDBURL(), Env.getDBUsername(), Env.getDBPassword());
 
         this.statement = connection.createStatement();
     }
