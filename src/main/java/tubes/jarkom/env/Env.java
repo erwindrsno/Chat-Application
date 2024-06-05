@@ -28,4 +28,13 @@ public class Env {
     public static String getDBPassword(){
         return dotenv.get("DB_PASSWORD");
     }
+
+    public static String getServerIP(){
+        return dotenv.get("SERVER_IP");
+    }
+
+    public static int getPort(){
+        int port = Integer.parseInt(dotenv.get("PORT"));
+        return port;
+    }
 }

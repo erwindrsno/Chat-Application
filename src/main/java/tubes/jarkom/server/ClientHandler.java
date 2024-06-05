@@ -1,4 +1,4 @@
-package tubes.jarkom;
+package tubes.jarkom.server;
 
 import tubes.jarkom.env.Env;
 import tubes.jarkom.model.Request;

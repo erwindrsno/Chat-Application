@@ -1,4 +1,4 @@
-package tubes.jarkom;
+package tubes.jarkom.server;
 
 import java.io.*;
 import java.net.*;
