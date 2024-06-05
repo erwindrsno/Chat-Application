@@ -182,16 +182,6 @@ public class Client {
         }
     }
 
-    // public static String getMyLocalIPAddress(){
-    //     try {
-    //         InetAddress inetAddress = InetAddress.getLocalHost();
-    //         return inetAddress.getHostAddress();
-    //     } catch (UnknownHostException e) {
-    //         e.printStackTrace();
-    //         return "failed to return IP";
-    //     }
-    // }
-
     public static String getIPAddress(){
         try {
             Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
