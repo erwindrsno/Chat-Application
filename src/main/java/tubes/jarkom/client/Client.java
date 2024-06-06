@@ -11,12 +11,13 @@ import java.net.Socket;
 
 import com.google.gson.Gson;
 
-import tubes.jarkom.model.Request;
-import tubes.jarkom.model.Response;
+import tubes.jarkom.request.Request;
+import tubes.jarkom.response.Response;
 import tubes.jarkom.model.Room;
 import tubes.jarkom.model.User;
+import tubes.jarkom.model.UserRoom;
 
-public class Client implements IClient{
+public class Client implements IClient {
     private User user;
     private Gson gson;
     private OutputStream output;
@@ -25,7 +26,7 @@ public class Client implements IClient{
     private BufferedReader readInputFromServer;
     private Socket clientSocket;
 
-    public Client(){
+    public Client() {
         this.user = new User();
         this.gson = new Gson();
         this.connectToServer();
@@ -43,17 +44,16 @@ public class Client implements IClient{
 
         writer.println(gson.toJson(req));
 
-        try{
+        try {
             response = readInputFromServer.readLine();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         @SuppressWarnings("unchecked")
         Response<String> res = gson.fromJson(response, Response.class);
 
-        //empty user credentials so user must login once registered.
+        // empty user credentials so user must login once registered.
         this.user.setUsername("");
         this.user.setPassword("");
         this.user.setName("");
@@ -72,10 +72,9 @@ public class Client implements IClient{
 
         String response = "";
 
-        try{
+        try {
             response = readInputFromServer.readLine();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("sini lah bang masuknya");
         }
@@ -85,7 +84,7 @@ public class Client implements IClient{
 
         System.out.println(res.getData());
 
-        if(res.getData().equals("200")){
+        if (res.getData().equals("200")) {
             this.user.setIsLoggedIn(true);
         }
     }
@@ -98,20 +97,20 @@ public class Client implements IClient{
 
     @Override
     public void createRoom(String roomName) {
-        if(!this.user.getIsLoggedIn()) return;
+        if (!this.user.getIsLoggedIn())
+            return;
 
         Room room = new Room(roomName, user.getName());
 
         Request<String> req = new Request<>("createRoom", gson.toJson(room));
 
         writer.println(gson.toJson(req));
-        
+
         String response = "";
 
-        try{
+        try {
             response = readInputFromServer.readLine();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -122,34 +121,63 @@ public class Client implements IClient{
     }
 
     @Override
-    public void logOut() {
-        this.user.setIsLoggedIn(false);
-    }   
+    public void addMember(String memberName, String roomName) {
+        if (!this.user.getIsLoggedIn())
+            return;
+
+        UserRoom userRoom = new UserRoom(memberName, roomName);
+
+        Request<String> req = new Request<>("addMember", gson.toJson(userRoom));
+
+        writer.println(gson.toJson(req));
+    }
 
     @Override
-    public void exit(){
-        try{
+    public void logout() {
+        if (!this.user.getIsLoggedIn())
+            return;
+        Request<String> req = new Request<>("logout");
+
+        writer.println(gson.toJson(req));
+
+        String response = "";
+
+        try {
+            response = readInputFromServer.readLine();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        @SuppressWarnings("unchecked")
+        Response<String> res = gson.fromJson(response, Response.class);
+
+        this.user.setIsLoggedIn(false);
+
+        System.out.println(res.getData());
+    }
+
+    @Override
+    public void exit() {
+        try {
             Request<String> req = new Request<>("exit");
             writer.println(gson.toJson(req));
             this.user = null;
             this.clientSocket.close();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     public void connectToServer() {
-        //Socket(server ip, server port)
-        try{
-            //Socket(server ip, server port)
+        // Socket(server ip, server port)
+        try {
+            // Socket(server ip, server port)
             this.clientSocket = new Socket(Env.getServerIP(), Env.getPort());
             this.output = clientSocket.getOutputStream();
-            this.writer = new PrintWriter(output,true);
+            this.writer = new PrintWriter(output, true);
             this.inFromServer = clientSocket.getInputStream();
             this.readInputFromServer = new BufferedReader(new InputStreamReader(inFromServer));
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

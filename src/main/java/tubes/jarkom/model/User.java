@@ -1,12 +1,11 @@
 package tubes.jarkom.model;
 
 public class User{
+    private Integer id;
     private String username;
     private String password;
     private String name;
-    private Integer id;
     private boolean isLoggedIn;
-    String actionName;
 
     public User(){}
 

@@ -5,6 +5,7 @@ public interface IClient {
     void login(String username, String password);
     void sendMessage();
     void createRoom(String roomName);
-    void logOut();
+    void addMember(String memberName, String roomName);
+    void logout();
     void exit();
 }

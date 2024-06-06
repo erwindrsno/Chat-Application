@@ -85,7 +85,7 @@ public class Main {
     }
 
     public static void handleLogOut(IClient client){
-        client.logOut();
+        client.logout();
     }
 
     public static void handleExit(IClient client){

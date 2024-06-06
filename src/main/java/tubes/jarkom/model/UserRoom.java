@@ -3,11 +3,11 @@ package tubes.jarkom.model;
 public class UserRoom {
     private Integer id;
     private String name;
-    private String owner;
+    private String roomName;
     
-    public UserRoom(String name, String owner){
+    public UserRoom(String name, String roomName){
         this.name = name;
-        this.owner = owner;
+        this.roomName = roomName;
     }
 
     public Integer getId() {
@@ -26,11 +26,11 @@ public class UserRoom {
         return this.name;
     }
 
-    public void setOwner(String owner){
-        this.owner = owner;
+    public void setOwner(String roomName){
+        this.roomName = roomName;
     }
 
     public String getOwner(){
-        return this.owner;
+        return this.roomName;
     }
 }
