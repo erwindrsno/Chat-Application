@@ -2,11 +2,11 @@ package tubes.jarkom.model;
 
 public class UserRoom {
     private Integer id;
-    private String name;
+    private String memberName;
     private String roomName;
     
-    public UserRoom(String name, String roomName){
-        this.name = name;
+    public UserRoom(String memberName, String roomName){
+        this.memberName = memberName;
         this.roomName = roomName;
     }
 
@@ -18,19 +18,19 @@ public class UserRoom {
         this.id = id;
     }
 
-    public void setName(String name){
-        this.name = name;
+    public void setMemberName(String memberName){
+        this.memberName = memberName;
     }
 
-    public String getName(){
-        return this.name;
+    public String getMemberName(){
+        return this.memberName;
     }
 
-    public void setOwner(String roomName){
+    public void setRoomName(String roomName){
         this.roomName = roomName;
     }
 
-    public String getOwner(){
+    public String getRoomName(){
         return this.roomName;
     }
 }

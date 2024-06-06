@@ -171,7 +171,13 @@ public class ClientHandler implements Runnable {
     }
 
     public void addMember(UserRoom userRoom) throws Exception{
-        System.out.println("sawadeekap");
+        System.out.println(userRoom.getMemberName());
+        System.out.println(userRoom.getRoomName());
+
+        //check if the one who addMember is the owner of the room
+        //check if the member is already inside or not
+        //true = proceed to add
+        //false = break
     }
 
     public void logout() throws Exception{
