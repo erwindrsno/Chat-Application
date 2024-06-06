@@ -77,6 +77,7 @@ public class Client implements IClient{
         }
         catch(Exception e){
             e.printStackTrace();
+            System.out.println("sini lah bang masuknya");
         }
 
         @SuppressWarnings("unchecked")
@@ -128,6 +129,9 @@ public class Client implements IClient{
     @Override
     public void exit(){
         try{
+            Request<String> req = new Request<>("exit");
+            writer.println(gson.toJson(req));
+            this.user = null;
             this.clientSocket.close();
         }
         catch(Exception e){

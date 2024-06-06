@@ -5,7 +5,6 @@ public class User{
     private String password;
     private String name;
     private Integer id;
-    private int userCount;
     private boolean isLoggedIn;
     String actionName;
 
@@ -15,7 +14,6 @@ public class User{
         this.username = username;
         this.password = password;
         this.isLoggedIn = false;
-        userCount++;
     }
 
     public void setUsername(String username){
@@ -63,15 +61,4 @@ public class User{
     public boolean getIsLoggedIn(){
         return this.isLoggedIn;
     }
-
-
-    // @Override
-    // public void setAction(String actionName) {
-    //     this.actionName = actionName;
-    // }
-
-    // @Override
-    // public String getAction() {
-    //     return this.actionName;
-    // }
 }

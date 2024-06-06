@@ -14,10 +14,9 @@ public class Server {
             while(true){
                 Socket connectionSocket = socket.accept();
 
-                clientCount++;
-
                 Thread clientHandler = new Thread(new ClientHandler(connectionSocket), "Client " + clientCount);
                 clientHandler.start();
+
             }
         }
         catch(Exception e){

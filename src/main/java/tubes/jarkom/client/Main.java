@@ -1,7 +1,6 @@
 package tubes.jarkom.client;
 
 import java.io.BufferedReader;
-import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -9,7 +8,7 @@ import java.net.NetworkInterface;
 import java.util.Enumeration;
 
 public class Main {
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args){
         IClient client = new Client();
         boolean flag = true;
 
@@ -17,28 +16,38 @@ public class Main {
 
         System.out.println("My ip address is : " + getIPAddress());
 
-        while(flag){
-            System.out.print("Action : ");
-            String action = input.readLine();
+        try{
+            while(flag){
+                System.out.print("Action : ");
+                String action = input.readLine();
+    
+                switch(action){
+                    case "login":
+                        handleLogin(input, client);
+                        break;
+                    
+                    case "register":
+                        handleRegister(input, client);
+                        break;
+    
+                    case "create":
+                        handleCreateRoom(input, client);
+                        break;
+    
+                    case "logout":
+                        handleLogOut(client);
+                        break;
 
-            switch(action){
-                case "login":
-                    handleLogin(input, client);
-                    break;
-                
-                case "register":
-                    handleRegister(input, client);
-                    break;
-
-                case "create":
-                    handleCreateRoom(input, client);
-                    break;
-
-                case "logout":
-                    handleLogOut(client);
-                    flag = !flag;
-                    break;
+                    case "exit":
+                        handleExit(client);
+                        flag = !flag;
+                        break;
+                }
             }
+        }
+        catch(Exception e){
+            System.out.println("masuk sini exception");
+            e.printStackTrace();
         }
     }
 
@@ -77,6 +86,10 @@ public class Main {
 
     public static void handleLogOut(IClient client){
         client.logOut();
+    }
+
+    public static void handleExit(IClient client){
+        client.exit();
     }
 
     public static String getIPAddress(){

@@ -29,14 +29,21 @@ public class ClientHandler implements Runnable{
     private Connection connection;
     private Statement statement;
 
+    private boolean flag;
+
+    private static int clientCount = 0;
+
     public ClientHandler(Socket socket){
         this.socket = socket;
         this.gson = new Gson();
+        clientCount++;
+        this.flag = true;
     }
 
     @Override
     public void run() {
         System.out.println(Thread.currentThread().getName() + " is Running!");
+        System.out.println("Total client is : " + clientCount);
 
         try{
             this.output = this.socket.getOutputStream();
@@ -49,7 +56,7 @@ public class ClientHandler implements Runnable{
         }
 
         try{
-            while(true){
+            while(this.flag){
                 String jsonMessage = inFromClient.readLine();
 
                 //not using generic due to request generic class may varies.
@@ -71,6 +78,12 @@ public class ClientHandler implements Runnable{
     
                     case "createRoom":
                         this.createRoom(this.gson.fromJson(request.getData().toString(), Room.class));
+                        break;
+
+                    case "exit":
+                        this.exit();
+                        this.flag = !flag;
+                        break;
                 }
             }
         }
@@ -135,12 +148,18 @@ public class ClientHandler implements Runnable{
         SimpleDateFormat ft = new SimpleDateFormat("dd-MM-yyyy"); 
         String created_at = ft.format(new Date());
 
-
         String query = "INSERT INTO rooms (name, owner_id, created_at) VALUES ('"+room.getName()+"', '"+this.user.getId()+"', '"+ created_at +"');";
 
         Response<String> res = (this.execute_update(query)) ? new Response<>(room.getName() + " has been created at " + created_at) : new Response<>("500");
         
         writer.println(gson.toJson(res));
+    }
+
+    public void exit() throws Exception{
+        this.user = null;
+        clientCount--;
+        System.out.println("A client disconnected, remains : " + clientCount);
+        this.socket.close();
     }
 
     public boolean execute_update(String query){
