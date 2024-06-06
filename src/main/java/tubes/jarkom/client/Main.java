@@ -11,12 +11,13 @@ import java.util.Enumeration;
 public class Main {
     public static void main(String[] args) throws IOException{
         IClient client = new Client();
+        boolean flag = true;
 
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
         System.out.println("My ip address is : " + getIPAddress());
 
-        while(true){
+        while(flag){
             System.out.print("Action : ");
             String action = input.readLine();
 
@@ -31,6 +32,11 @@ public class Main {
 
                 case "create":
                     handleCreateRoom(input, client);
+                    break;
+
+                case "logout":
+                    handleLogOut(client);
+                    flag = !flag;
                     break;
             }
         }
@@ -67,6 +73,10 @@ public class Main {
         String roomName = input.readLine();
         
         client.createRoom(roomName);
+    }
+
+    public static void handleLogOut(IClient client){
+        client.logOut();
     }
 
     public static String getIPAddress(){

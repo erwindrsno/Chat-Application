@@ -123,16 +123,17 @@ public class Client implements IClient{
     @Override
     public void logOut() {
         this.user.setIsLoggedIn(false);
-        this.user = null;
+    }   
+
+    @Override
+    public void exit(){
         try{
             this.clientSocket.close();
         }
         catch(Exception e){
             e.printStackTrace();
         }
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'logOut'");
-    }   
+    }
     
     public void connectToServer() {
         //Socket(server ip, server port)

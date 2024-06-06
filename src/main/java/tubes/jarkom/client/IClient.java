@@ -6,4 +6,5 @@ public interface IClient {
     void sendMessage();
     void createRoom(String roomName);
     void logOut();
+    void exit();
 }
