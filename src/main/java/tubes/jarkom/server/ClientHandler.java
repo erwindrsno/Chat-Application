@@ -63,8 +63,9 @@ public class ClientHandler implements Runnable{
                 @SuppressWarnings("rawtypes")
                 Request request = this.gson.fromJson(jsonMessage, Request.class);
     
-                //since above request is receiving the rawtype non generics object. Compiler doesnt know that the data is String.
-                //Hence .toString() method is used.
+                //for some reason, the request.getData() is unable to cast to a specific types (due to gson library reason)
+                //e.g : (User)request.getData()
+                //hence .getData() must be convert to string and deserealize it using gson.
                 switch(request.getAction()){
                     case "login":
                         this.user = this.gson.fromJson(request.getData().toString(), User.class);
