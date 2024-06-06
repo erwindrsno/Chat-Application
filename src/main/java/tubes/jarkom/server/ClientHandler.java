@@ -126,16 +126,8 @@ public class ClientHandler implements Runnable{
 
         String query = "INSERT INTO users (name, username, password) VALUES ('"+this.user.getName()+"', '"+this.user.getUsername()+"', '"+hashedPassword+"');";
 
-        Response<String> res;
+        Response<String> res = (this.execute_update(query)) ? new Response<>("201") : new Response<>("500");
 
-        if(this.execute_update(query)){
-            System.out.println("register OK 201");
-
-            res = new Response<>("201");
-        }
-        else{
-            res = new Response<>("500");
-        }
         writer.println(gson.toJson(res));
     }
 
@@ -143,18 +135,12 @@ public class ClientHandler implements Runnable{
         SimpleDateFormat ft = new SimpleDateFormat("dd-MM-yyyy"); 
         String created_at = ft.format(new Date());
 
+
         String query = "INSERT INTO rooms (name, owner_id, created_at) VALUES ('"+room.getName()+"', '"+this.user.getId()+"', '"+ created_at +"');";
 
-        if(this.execute_update(query)){
-            System.out.println("create room OK 201");
-
-            Response<String> res = new Response<>(room.getName() + " has been created at " + created_at);
-
-            writer.println(gson.toJson(res));
-        }
-        else{
-            System.out.println("failed :(");
-        }
+        Response<String> res = (this.execute_update(query)) ? new Response<>(room.getName() + " has been created at " + created_at) : new Response<>("500");
+        
+        writer.println(gson.toJson(res));
     }
 
     public boolean execute_update(String query){

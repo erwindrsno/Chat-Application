@@ -53,8 +53,10 @@ public class Client implements IClient{
         @SuppressWarnings("unchecked")
         Response<String> res = gson.fromJson(response, Response.class);
 
-        //set user to null so user must login once registered.
-        this.user = null;
+        //empty user credentials so user must login once registered.
+        this.user.setUsername("");
+        this.user.setPassword("");
+        this.user.setName("");
 
         System.out.println(res.getData());
     }
@@ -80,11 +82,11 @@ public class Client implements IClient{
         @SuppressWarnings("unchecked")
         Response<String> res = gson.fromJson(response, Response.class);
 
+        System.out.println(res.getData());
+
         if(res.getData().equals("200")){
             this.user.setIsLoggedIn(true);
         }
-
-        System.out.println(res.getData());
     }
 
     @Override
@@ -94,8 +96,8 @@ public class Client implements IClient{
     }
 
     @Override
-    public String createRoom(String roomName) {
-        if(!this.user.getIsLoggedIn()) return "gabisa mas";
+    public void createRoom(String roomName) {
+        if(!this.user.getIsLoggedIn()) return;
 
         Room room = new Room(roomName, user.getName());
 
@@ -116,8 +118,6 @@ public class Client implements IClient{
         Response<String> res = gson.fromJson(response, Response.class);
 
         System.out.println(res.getData());
-
-        return "bisa mas";
     }
 
     @Override

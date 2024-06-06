@@ -37,6 +37,7 @@ public class Main {
     }
 
     public static void handleLogin(BufferedReader input, IClient client) throws IOException{
+        System.out.println("==LOGIN==");
         System.out.print("Username : ");
         String username = input.readLine();
 
@@ -47,23 +48,25 @@ public class Main {
     }
 
     public static void handleRegister(BufferedReader input, IClient client) throws IOException{
+        System.out.println("==REGISTER==");
         System.out.print("Username : ");
         String username = input.readLine();
 
         System.out.print("Password : ");
         String password = input.readLine();
 
-        System.out.println("Name : ");
+        System.out.print("Name : ");
         String name = input.readLine();
 
         client.register(username, password, name);
     }
 
     public static void handleCreateRoom(BufferedReader input, IClient client) throws IOException{
+        System.out.println("==CREATE ROOM==");
         System.out.print("Room name : ");
         String roomName = input.readLine();
-
-        System.out.println(client.createRoom(roomName));
+        
+        client.createRoom(roomName);
     }
 
     public static String getIPAddress(){
