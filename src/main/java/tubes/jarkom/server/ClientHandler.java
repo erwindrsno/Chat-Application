@@ -16,7 +16,6 @@ import java.util.Date;
 
 import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
-import com.mysql.cj.x.protobuf.MysqlxPrepare.Prepare;
 
 public class ClientHandler implements Runnable {
     private Socket socket;
@@ -32,6 +31,8 @@ public class ClientHandler implements Runnable {
     private Statement statement;
 
     private boolean flag;
+
+    private IQueryExecutor qe;
 
     private static int clientCount = 0;
 
@@ -109,6 +110,8 @@ public class ClientHandler implements Runnable {
         this.connection = DriverManager.getConnection(Env.getDBURL(), Env.getDBUsername(), Env.getDBPassword());
 
         this.statement = connection.createStatement();
+
+        this.qe = new QueryExecutor(this.connection);
     }
 
     public void login() throws Exception {
@@ -259,7 +262,6 @@ public class ClientHandler implements Runnable {
             System.out.println("sorry failed man");
         }
 
-        // check if the one who addMember is the owner of the room
         // check if the member is already inside or not
         // true = proceed to add
         // false = break
