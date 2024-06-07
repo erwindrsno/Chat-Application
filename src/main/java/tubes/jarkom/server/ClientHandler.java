@@ -210,10 +210,55 @@ public class ClientHandler implements Runnable {
     }
 
     public void addMember(UserRoom userRoom) throws Exception {
-        System.out.println(userRoom.getMemberName());
-        System.out.println(userRoom.getRoomName());
+        System.out.println("masuk add member");
+        System.out.println("id user ini adalah " + this.user.getId());
+        System.out.println("nama room nya adalah " + userRoom.getRoomName());
+        Response<String> res; 
 
-        String query = "SELECT * FRom";
+        SimpleDateFormat ft = new SimpleDateFormat("dd-MM-yyyy");
+        String current = ft.format(new Date());
+
+        int roomId = 0;
+        int memberId = 0;
+
+        String checkOwnerQuery = "SELECT * FROM rooms WHERE name = ? && owner_id = ? ";
+        PreparedStatement psCheckOwner = this.connection.prepareStatement(checkOwnerQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+        psCheckOwner.setString(1, userRoom.getRoomName());
+        psCheckOwner.setInt(2,this.user.getId());
+        ResultSet rsCheckOwner = psCheckOwner.executeQuery();
+
+        if(rsCheckOwner.next()){
+            roomId = rsCheckOwner.getInt(1);
+        }
+
+        String getMemberIdQuery = "SELECT id FROM users WHERE name = ?";
+        PreparedStatement psGetMemberId = this.connection.prepareStatement(getMemberIdQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+        psGetMemberId.setString(1,userRoom.getMemberName());
+        ResultSet rsGetMemberId = psGetMemberId.executeQuery();
+
+        if(rsGetMemberId.next()){
+            memberId = rsGetMemberId.getInt(1);
+            System.out.println("member id adalah : " + memberId);
+        }
+        //if not owner, break
+        // if(!rsCheckOwner.next()) return;
+        // if(!rsGetMemberId.next()) return;
+
+        String joinRoomQuery = "INSERT INTO users_rooms (users_id, rooms_id, joined_at) VALUES (?,?,?)";
+        PreparedStatement psJoinRoom = this.connection.prepareStatement(joinRoomQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+        psJoinRoom.setInt(1, memberId);
+        psJoinRoom.setInt(2, roomId);
+        psJoinRoom.setString(3, current);
+        int isInserted = psJoinRoom.executeUpdate();
+
+        if(isInserted == 1){
+            res = new Response<>("Successfully added " + userRoom.getMemberName() + " to " + userRoom.getRoomName());
+            writer.println(gson.toJson(res));
+        }
+        else{
+            System.out.println("sorry failed man");
+        }
+
         // check if the one who addMember is the owner of the room
         // check if the member is already inside or not
         // true = proceed to add

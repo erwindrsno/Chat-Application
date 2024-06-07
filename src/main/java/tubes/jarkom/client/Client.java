@@ -130,6 +130,19 @@ public class Client implements IClient {
         Request<String> req = new Request<>("addMember", gson.toJson(userRoom));
 
         writer.println(gson.toJson(req));
+
+        String response = "";
+
+        try {
+            response = readInputFromServer.readLine();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        @SuppressWarnings("unchecked")
+        Response<String> res = gson.fromJson(response, Response.class);
+
+        System.out.println(res.getData());
     }
 
     @Override
