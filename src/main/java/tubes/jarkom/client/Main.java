@@ -8,7 +8,7 @@ import java.net.NetworkInterface;
 import java.util.Enumeration;
 
 public class Main {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         IClient client = new Client();
         boolean flag = true;
 
@@ -16,20 +16,20 @@ public class Main {
 
         System.out.println("My ip address is : " + getIPAddress());
 
-        try{
-            while(flag){
+        try {
+            while (flag) {
                 System.out.print("Action : ");
                 String action = input.readLine();
-    
-                switch(action){
+
+                switch (action) {
                     case "login":
                         handleLogin(input, client);
                         break;
-                    
+
                     case "register":
                         handleRegister(input, client);
                         break;
-    
+
                     case "create":
                         handleCreateRoom(input, client);
                         break;
@@ -37,7 +37,7 @@ public class Main {
                     case "addmember":
                         handleAddMember(input, client);
                         break;
-    
+
                     case "logout":
                         handleLogOut(client);
                         break;
@@ -48,14 +48,13 @@ public class Main {
                         break;
                 }
             }
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             System.out.println("masuk sini exception");
             e.printStackTrace();
         }
     }
 
-    public static void handleLogin(BufferedReader input, IClient client) throws IOException{
+    public static void handleLogin(BufferedReader input, IClient client) throws IOException {
         System.out.println("==LOGIN==");
         System.out.print("Username : ");
         String username = input.readLine();
@@ -66,7 +65,7 @@ public class Main {
         client.login(username, password);
     }
 
-    public static void handleRegister(BufferedReader input, IClient client) throws IOException{
+    public static void handleRegister(BufferedReader input, IClient client) throws IOException {
         System.out.println("==REGISTER==");
         System.out.print("Username : ");
         String username = input.readLine();
@@ -80,15 +79,15 @@ public class Main {
         client.register(username, password, name);
     }
 
-    public static void handleCreateRoom(BufferedReader input, IClient client) throws IOException{
+    public static void handleCreateRoom(BufferedReader input, IClient client) throws IOException {
         System.out.println("==CREATE ROOM==");
         System.out.print("Room name : ");
         String roomName = input.readLine();
-        
+
         client.createRoom(roomName);
     }
 
-    public static void handleAddMember(BufferedReader input, IClient client) throws IOException{
+    public static void handleAddMember(BufferedReader input, IClient client) throws IOException {
         System.out.println("==ADD MEMBER==");
         System.out.print("Member name : ");
         String memberName = input.readLine();
@@ -99,15 +98,15 @@ public class Main {
         client.addMember(memberName, roomName);
     }
 
-    public static void handleLogOut(IClient client){
+    public static void handleLogOut(IClient client) {
         client.logout();
     }
 
-    public static void handleExit(IClient client){
+    public static void handleExit(IClient client) {
         client.exit();
     }
 
-    public static String getIPAddress(){
+    public static String getIPAddress() {
         try {
             Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
             while (networkInterfaces.hasMoreElements()) {

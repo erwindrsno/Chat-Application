@@ -16,6 +16,7 @@ import java.util.Date;
 
 import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
+import com.mysql.cj.x.protobuf.MysqlxPrepare.Prepare;
 
 public class ClientHandler implements Runnable {
     private Socket socket;
@@ -115,27 +116,29 @@ public class ClientHandler implements Runnable {
                 .hashString(user.getPassword(), StandardCharsets.UTF_8)
                 .toString();
 
-        String query = "SELECT * FROM users WHERE username='" + user.getUsername() + "' && password ='" + hashedPassword
-                + "'";
-
-        ResultSet queryRes = this.execute_query(query);
-
         Response<String> res;
+
+        String loginQuery = "SELECT * FROM users WHERE username = ? && password = ?";
+        PreparedStatement psLoginQuery = this.connection.prepareStatement(loginQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+        psLoginQuery.setString(1, this.user.getUsername());
+        psLoginQuery.setString(2, hashedPassword);
+        ResultSet rs = psLoginQuery.executeQuery();
 
         // .next() method move the cursor for one index.
         // set name because during login, the object that is send by client doesnt have
         // name inside the user object.
-        if (queryRes.next()) {
-            this.user.setName(queryRes.getString(2));
+        if(rs.next()){
+            this.user.setName(rs.getString(2));
             System.out.println(this.user.getName() + " has logged in");
             this.user.setIsLoggedIn(true);
 
             do {
-                this.user.setId(queryRes.getInt(1));
-            } while (queryRes.next());
+                this.user.setId(rs.getInt(1));
+            } while (rs.next());
 
             res = new Response<>("200");
-        } else {
+        }
+        else {
             res = new Response<>("401");
             this.user.setIsLoggedIn(false);
         }
@@ -145,42 +148,79 @@ public class ClientHandler implements Runnable {
 
     public void register() throws Exception {
         String hashedPassword = Hashing.sha256()
-                .hashString(user.getPassword(), StandardCharsets.UTF_8)
+                .hashString(this.user.getPassword(), StandardCharsets.UTF_8)
                 .toString();
 
-        String query = "INSERT INTO users (name, username, password) VALUES ('" + this.user.getName() + "', '"
-                + this.user.getUsername() + "', '" + hashedPassword + "');";
+        Response<String> res;
 
-        Response<String> res = (this.execute_update(query)) ? new Response<>("201") : new Response<>("500");
+        String registerQuery = "INSERT INTO users (name, username, password) VALUES (?,?,?)";
+        PreparedStatement psRegisterQuery = this.connection.prepareStatement(registerQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+        psRegisterQuery.setString(1, this.user.getName());
+        psRegisterQuery.setString(2, this.user.getUsername());
+        psRegisterQuery.setString(3, hashedPassword);
+        int isRegistered = psRegisterQuery.executeUpdate();
+
+        // ResultSet rs = psRegisterQuery.getGeneratedKeys();
+
+        if(isRegistered == 1){
+            res = new Response<>("201");
+        }
+        else{
+            res = new Response<>("failed");
+        }
 
         writer.println(gson.toJson(res));
     }
 
     public void createRoom(Room room) throws Exception {
+        Response<String> res;
+
         SimpleDateFormat ft = new SimpleDateFormat("dd-MM-yyyy");
-        String created_at = ft.format(new Date());
+        String current = ft.format(new Date());
 
-        String query = "INSERT INTO rooms (name, owner_id, created_at) VALUES ('" + room.getName() + "', '"
-                + this.user.getId() + "', '" + created_at + "');";
+        String insertRoomQuery = "INSERT INTO rooms (name, owner_id, created_at) VALUES (?,?,?)";
+        PreparedStatement psInsertRoom = this.connection.prepareStatement(insertRoomQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+        psInsertRoom.setString(1, room.getName());
+        psInsertRoom.setInt(2, this.user.getId());
+        psInsertRoom.setString(3, current);
+        psInsertRoom.executeUpdate();
 
-        Response<String> res = (this.execute_update(query))
-                ? new Response<>(room.getName() + " has been created at " + created_at)
-                : new Response<>("500");
+        ResultSet rs = psInsertRoom.getGeneratedKeys();
+
+        int roomId = 0;
+        if(rs.next()){
+            roomId = rs.getInt(1);
+        }
+
+        String joinRoomQuery = "INSERT INTO users_rooms (users_id, rooms_id, joined_at) VALUES (?,?,?)";
+        PreparedStatement psJoinRoom = this.connection.prepareStatement(joinRoomQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+        psJoinRoom.setInt(1,this.user.getId());
+        psJoinRoom.setInt(2, roomId);
+        psJoinRoom.setString(3, current);
+        int isInserted = psJoinRoom.executeUpdate();
+
+        if(isInserted == 1){
+            res = new Response<>(room.getName() + " has been created at " + current);
+        }
+        else{
+            res = new Response<>("500");
+        }
 
         writer.println(gson.toJson(res));
     }
 
-    public void addMember(UserRoom userRoom) throws Exception{
+    public void addMember(UserRoom userRoom) throws Exception {
         System.out.println(userRoom.getMemberName());
         System.out.println(userRoom.getRoomName());
 
-        //check if the one who addMember is the owner of the room
-        //check if the member is already inside or not
-        //true = proceed to add
-        //false = break
+        String query = "SELECT * FRom";
+        // check if the one who addMember is the owner of the room
+        // check if the member is already inside or not
+        // true = proceed to add
+        // false = break
     }
 
-    public void logout() throws Exception{
+    public void logout() throws Exception {
         this.user.setIsLoggedIn(false);
 
         Response<String> res = new Response<>("log out succeed");
