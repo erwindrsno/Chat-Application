@@ -5,8 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 //1. Close Statement
-//2. Check whether a user has duplicated rooms or not
-//3. Check whether a user registered a duplicate name or not
 
 public class QueryExecutor implements IQueryExecutor {
     Connection connection;
@@ -144,11 +142,28 @@ public class QueryExecutor implements IQueryExecutor {
             psCheckDuplicatedName.setString(1, name);
             ResultSet rsCheckDuplicatedName = psCheckDuplicatedName.executeQuery();
             if (rsCheckDuplicatedName.next()) {
-                System.out.println("masuk pak eko");
                 return true;
             }
             return false;
         } catch (Exception e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
+    @Override
+    public boolean isMemberInsideQuery(int userId, int roomId) {
+        String isMemberInsideQuery = "SELECT * FROM users_rooms WHERE users_id = ? && rooms_id = ?";
+        try{
+            PreparedStatement psIsMemberInside = this.connection.prepareStatement(isMemberInsideQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+            psIsMemberInside.setInt(1, userId);
+            psIsMemberInside.setInt(2, roomId);
+            ResultSet rsIsMemberInside = psIsMemberInside.executeQuery();
+            if(rsIsMemberInside.next()){
+                return true;
+            }
+            return false;
+        } catch (Exception e){
             e.printStackTrace();
             return true;
         }

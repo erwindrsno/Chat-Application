@@ -11,4 +11,5 @@ public interface IQueryExecutor {
     ResultSet getMemberIdQuery(String name);
     ResultSet getOwnedRoomQuery(int usersId);
     boolean checkDuplicatedNameQuery(String name);
+    boolean isMemberInsideQuery(int userId, int roomId);
 }

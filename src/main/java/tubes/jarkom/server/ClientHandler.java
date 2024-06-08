@@ -151,10 +151,7 @@ public class ClientHandler implements Runnable {
                 .hashString(this.user.getPassword(), StandardCharsets.UTF_8)
                 .toString();
 
-        System.out.println(this.user.getName());
-        boolean isDuplicatedName = this.qe.checkDuplicatedNameQuery(this.user.getName());
-
-        if(isDuplicatedName){
+        if(this.qe.checkDuplicatedNameQuery(this.user.getName())){
             Response<String> res = new Response<>("Sorry, someone took that cool name, try another name!");
             writer.println(gson.toJson(res));
             return;
@@ -169,6 +166,7 @@ public class ClientHandler implements Runnable {
     public void createRoom(Room room) throws Exception {
         SimpleDateFormat ft = new SimpleDateFormat("dd-MM-yyyy");
         String current = ft.format(new Date());
+        int roomId = 0;
 
         if (this.isDuplicatedRoom(room.getName())) {
             Response<String> res = new Response<>("Sorry, that is a duplicated room name, try another name!");
@@ -180,7 +178,6 @@ public class ClientHandler implements Runnable {
 
         this.ownedRooms.add(room.getName());
 
-        int roomId = 0;
         if (rs.next()) {
             roomId = rs.getInt(1);
         }
@@ -215,6 +212,12 @@ public class ClientHandler implements Runnable {
             System.out.println("no member with this id");
         }
 
+        if(this.qe.isMemberInsideQuery(memberId, roomId)){
+            Response<String> res = new Response<>("Sorry, that guy is one of us already!");
+            writer.println(gson.toJson(res));
+            return;
+        }
+
         boolean hasJoinedRoom = this.qe.joinRoomQuery(memberId, roomId, current);
 
         Response<String> res = hasJoinedRoom
@@ -222,9 +225,6 @@ public class ClientHandler implements Runnable {
                 : new Response<>("500");
 
         writer.println(gson.toJson(res));
-        // check if the member is already inside or not
-        // true = proceed to add
-        // false = break
     }
 
     public void logout() throws Exception {
