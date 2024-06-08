@@ -116,7 +116,6 @@ public class ClientHandler implements Runnable {
 
         ResultSet rsLogin = this.qe.loginQuery(this.user.getUsername(), hashedPassword);
 
-        // .next() method move the cursor for one record.
         // set name because during login, the object that is send by client doesnt have
         // name inside the user object.
         if (!rsLogin.next()) {
