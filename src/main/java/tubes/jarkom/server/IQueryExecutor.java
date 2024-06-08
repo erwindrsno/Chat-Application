@@ -9,4 +9,5 @@ public interface IQueryExecutor {
     boolean joinRoomQuery(int usersId, int roomsId, String current);
     ResultSet checkOwnerQuery(String roomName, int userId);
     ResultSet getMemberIdQuery(String name);
+    ResultSet getOwnedRoomQuery(int usersId);
 }

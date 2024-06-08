@@ -11,6 +11,7 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.google.common.hash.Hashing;
@@ -25,6 +26,7 @@ public class ClientHandler implements Runnable {
     private OutputStream output;
 
     private User user;
+    private ArrayList<String> ownedRooms;
 
     private boolean flag;
 
@@ -37,6 +39,7 @@ public class ClientHandler implements Runnable {
     public ClientHandler(Socket socket) {
         this.socket = socket;
         this.gson = new Gson();
+        this.ownedRooms = new ArrayList<>();
         this.flag = true;
         this.db = new DatabaseConnection();
         this.qe = new QueryExecutor(this.db.getConnection());
@@ -106,30 +109,39 @@ public class ClientHandler implements Runnable {
 
     public void login() throws Exception {
         String hashedPassword = Hashing.sha256()
-                .hashString(user.getPassword(), StandardCharsets.UTF_8)
+                .hashString(this.user.getPassword(), StandardCharsets.UTF_8)
                 .toString();
 
         Response<String> res;
 
-        ResultSet loginResultSet = this.qe.loginQuery(this.user.getUsername(), hashedPassword);
+        ResultSet rsLogin = this.qe.loginQuery(this.user.getUsername(), hashedPassword);
 
         // .next() method move the cursor for one record.
         // set name because during login, the object that is send by client doesnt have
         // name inside the user object.
-        if (loginResultSet.next()) {
-            this.user.setName(loginResultSet.getString(2));
-            System.out.println(this.user.getName() + " has logged in");
-            this.user.setIsLoggedIn(true);
-
-            do {
-                this.user.setId(loginResultSet.getInt(1));
-            } while (loginResultSet.next());
-
-            res = new Response<>("200");
-        } else {
+        if (!rsLogin.next()) {
             res = new Response<>("401");
             this.user.setIsLoggedIn(false);
+            writer.println(gson.toJson(res));
+            return;
         }
+        this.user.setName(rsLogin.getString(2));
+        this.user.setIsLoggedIn(true);
+        this.user.setId(rsLogin.getInt(1));
+
+        ResultSet rsGetOwnedRoom = this.qe.getOwnedRoomQuery(this.user.getId());
+
+        if (!rsGetOwnedRoom.next()) {
+            System.out.println(this.user.getName() + " doesn't have own any rooms");
+        } else {
+            do {
+                this.ownedRooms.add(rsGetOwnedRoom.getString(1));
+            } while (rsGetOwnedRoom.next());
+        }
+
+        res = new Response<>("200");
+
+        System.out.println(this.user.getName() + " has logged in");
 
         writer.println(gson.toJson(res));
     }
@@ -149,7 +161,15 @@ public class ClientHandler implements Runnable {
         SimpleDateFormat ft = new SimpleDateFormat("dd-MM-yyyy");
         String current = ft.format(new Date());
 
+        if (this.isDuplicatedRoom(room.getName())) {
+            Response<String> res = new Response<>("Sorry, that is a duplicated room name, try another name!");
+            writer.println(gson.toJson(res));
+            return;
+        }
+
         ResultSet rs = this.qe.insertRoomQuery(room.getName(), this.user.getId(), current);
+
+        this.ownedRooms.add(room.getName());
 
         int roomId = 0;
         if (rs.next()) {
@@ -182,14 +202,14 @@ public class ClientHandler implements Runnable {
         if (rsGetMemberId.next()) {
             memberId = rsGetMemberId.getInt(1);
             System.out.println("member id adalah : " + memberId);
-        }
-        else{
+        } else {
             System.out.println("no member with this id");
         }
 
         boolean hasJoinedRoom = this.qe.joinRoomQuery(memberId, roomId, current);
 
-        Response<String> res = hasJoinedRoom ? new Response<>(userRoom.getMemberName() + " has joined " + userRoom.getRoomName() + " at " + current)
+        Response<String> res = hasJoinedRoom
+                ? new Response<>(userRoom.getMemberName() + " has joined " + userRoom.getRoomName() + " at " + current)
                 : new Response<>("500");
 
         writer.println(gson.toJson(res));
@@ -211,5 +231,14 @@ public class ClientHandler implements Runnable {
         clientCount--;
         System.out.println("A client disconnected, remains : " + clientCount);
         this.socket.close();
+    }
+
+    private boolean isDuplicatedRoom(String roomName) {
+        for (int i = 0; i < this.ownedRooms.size(); i++) {
+            if (roomName.equals(this.ownedRooms.get(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 }

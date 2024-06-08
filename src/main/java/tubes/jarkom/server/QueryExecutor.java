@@ -4,6 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+//1. Close Statement
+//2. Check whether a user has duplicated rooms or not
+//3. Check whether a user registered a duplicate name or not
+
 public class QueryExecutor implements IQueryExecutor {
     Connection connection;
 
@@ -111,6 +115,21 @@ public class QueryExecutor implements IQueryExecutor {
             ResultSet rsGetMemberId = psGetMemberId.executeQuery();
             return rsGetMemberId;
         } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public ResultSet getOwnedRoomQuery(int usersId) {
+        try{
+            String getOwnedRoomQuery = "SELECT name FROM rooms WHERE owner_id = ?";
+            PreparedStatement psGetOwnedRoom = this.connection.prepareStatement(getOwnedRoomQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+            psGetOwnedRoom.setInt(1,usersId);
+            ResultSet rsGetOwnedRoom = psGetOwnedRoom.executeQuery();
+            return rsGetOwnedRoom;
+        }
+        catch (Exception e){
             e.printStackTrace();
             return null;
         }
