@@ -107,8 +107,8 @@ public class QueryExecutor implements IQueryExecutor {
 
     @Override
     public ResultSet getMemberIdQuery(String name) {
+        String getMemberIdQuery = "SELECT id FROM users WHERE name = ?";
         try {
-            String getMemberIdQuery = "SELECT id FROM users WHERE name = ?";
             PreparedStatement psGetMemberId = this.connection.prepareStatement(getMemberIdQuery,
                     PreparedStatement.RETURN_GENERATED_KEYS);
             psGetMemberId.setString(1, name);
@@ -122,16 +122,35 @@ public class QueryExecutor implements IQueryExecutor {
 
     @Override
     public ResultSet getOwnedRoomQuery(int usersId) {
-        try{
-            String getOwnedRoomQuery = "SELECT name FROM rooms WHERE owner_id = ?";
-            PreparedStatement psGetOwnedRoom = this.connection.prepareStatement(getOwnedRoomQuery, PreparedStatement.RETURN_GENERATED_KEYS);
-            psGetOwnedRoom.setInt(1,usersId);
+        String getOwnedRoomQuery = "SELECT name FROM rooms WHERE owner_id = ?";
+        try {
+            PreparedStatement psGetOwnedRoom = this.connection.prepareStatement(getOwnedRoomQuery,
+                    PreparedStatement.RETURN_GENERATED_KEYS);
+            psGetOwnedRoom.setInt(1, usersId);
             ResultSet rsGetOwnedRoom = psGetOwnedRoom.executeQuery();
             return rsGetOwnedRoom;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    @Override
+    public boolean checkDuplicatedNameQuery(String name) {
+        String checkDuplicatedNameQuery = "SELECT * FROM users WHERE name = ?";
+        try {
+            PreparedStatement psCheckDuplicatedName = this.connection.prepareStatement(checkDuplicatedNameQuery,
+                    PreparedStatement.RETURN_GENERATED_KEYS);
+            psCheckDuplicatedName.setString(1, name);
+            ResultSet rsCheckDuplicatedName = psCheckDuplicatedName.executeQuery();
+            if (rsCheckDuplicatedName.next()) {
+                System.out.println("masuk pak eko");
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return true;
         }
     }
 }

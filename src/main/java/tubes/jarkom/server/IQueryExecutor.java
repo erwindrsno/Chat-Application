@@ -10,4 +10,5 @@ public interface IQueryExecutor {
     ResultSet checkOwnerQuery(String roomName, int userId);
     ResultSet getMemberIdQuery(String name);
     ResultSet getOwnedRoomQuery(int usersId);
+    boolean checkDuplicatedNameQuery(String name);
 }

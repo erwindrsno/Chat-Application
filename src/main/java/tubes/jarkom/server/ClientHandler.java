@@ -151,6 +151,15 @@ public class ClientHandler implements Runnable {
                 .hashString(this.user.getPassword(), StandardCharsets.UTF_8)
                 .toString();
 
+        System.out.println(this.user.getName());
+        boolean isDuplicatedName = this.qe.checkDuplicatedNameQuery(this.user.getName());
+
+        if(isDuplicatedName){
+            Response<String> res = new Response<>("Sorry, someone took that cool name, try another name!");
+            writer.println(gson.toJson(res));
+            return;
+        }
+
         boolean isRegistered = this.qe.registerQuery(this.user.getName(), this.user.getUsername(), hashedPassword);
 
         Response<String> res = isRegistered ? new Response<>("201") : new Response<>("failed");
