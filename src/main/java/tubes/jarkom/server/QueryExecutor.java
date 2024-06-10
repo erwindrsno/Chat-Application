@@ -134,12 +134,13 @@ public class QueryExecutor implements IQueryExecutor {
     }
 
     @Override
-    public boolean checkDuplicatedNameQuery(String name) {
-        String checkDuplicatedNameQuery = "SELECT * FROM users WHERE name = ?";
+    public boolean checkDuplicatedNameQuery(String name, String username) {
+        String checkDuplicatedNameQuery = "SELECT * FROM users WHERE name = ? || username = ?";
         try {
             PreparedStatement psCheckDuplicatedName = this.connection.prepareStatement(checkDuplicatedNameQuery,
                     PreparedStatement.RETURN_GENERATED_KEYS);
             psCheckDuplicatedName.setString(1, name);
+            psCheckDuplicatedName.setString(2, username);
             ResultSet rsCheckDuplicatedName = psCheckDuplicatedName.executeQuery();
             if (rsCheckDuplicatedName.next()) {
                 return true;

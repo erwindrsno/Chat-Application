@@ -150,8 +150,8 @@ public class ClientHandler implements Runnable {
                 .hashString(this.user.getPassword(), StandardCharsets.UTF_8)
                 .toString();
 
-        if(this.qe.checkDuplicatedNameQuery(this.user.getName())){
-            Response<String> res = new Response<>("Sorry, someone took that cool name, try another name!");
+        if(this.qe.checkDuplicatedNameQuery(this.user.getName(), this.user.getUsername())){
+            Response<String> res = new Response<>("Sorry, someone took that cool name or username, try another one!");
             writer.println(gson.toJson(res));
             return;
         }
