@@ -155,18 +155,32 @@ public class QueryExecutor implements IQueryExecutor {
     @Override
     public boolean isMemberInsideQuery(int userId, int roomId) {
         String isMemberInsideQuery = "SELECT * FROM users_rooms WHERE users_id = ? && rooms_id = ?";
-        try{
-            PreparedStatement psIsMemberInside = this.connection.prepareStatement(isMemberInsideQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+        try {
+            PreparedStatement psIsMemberInside = this.connection.prepareStatement(isMemberInsideQuery,
+                    PreparedStatement.RETURN_GENERATED_KEYS);
             psIsMemberInside.setInt(1, userId);
             psIsMemberInside.setInt(2, roomId);
             ResultSet rsIsMemberInside = psIsMemberInside.executeQuery();
-            if(rsIsMemberInside.next()){
+            if (rsIsMemberInside.next()) {
                 return true;
             }
             return false;
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return true;
+        }
+    }
+
+    @Override
+    public ResultSet listAllAvailableRooms() {
+        String listAllAvailableRoomsQuery = "SELECT * FROM rooms";
+        try{
+            PreparedStatement psListAllAvailableRooms = this.connection.prepareStatement(listAllAvailableRoomsQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+            ResultSet rsListAllAvailableRooms = psListAllAvailableRooms.executeQuery();
+            return rsListAllAvailableRooms;
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
         }
     }
 }

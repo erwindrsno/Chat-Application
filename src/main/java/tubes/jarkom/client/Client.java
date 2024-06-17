@@ -30,6 +30,38 @@ public class Client implements IClient {
         this.user = new User();
         this.gson = new Gson();
         this.connectToServer();
+        this.listenOnMessage();
+    }
+
+    public void connectToServer() {
+        // Socket(server ip, server port)
+        try {
+            // Socket(server ip, server port)
+            this.clientSocket = new Socket(Env.getServerIP(), Env.getPort());
+            this.output = clientSocket.getOutputStream();
+            this.writer = new PrintWriter(output, true);
+            this.inFromServer = clientSocket.getInputStream();
+            this.readInputFromServer = new BufferedReader(new InputStreamReader(inFromServer));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void listenOnMessage(){
+        new Thread(() -> {
+            String response = "";
+
+            try{
+                response = this.readInputFromServer.readLine();
+
+                @SuppressWarnings("unchecked")
+                Response<String> res = gson.fromJson(response, Response.class);
+
+                System.out.println("Message : " + res.getData());
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     @Override
@@ -176,20 +208,6 @@ public class Client implements IClient {
             writer.println(gson.toJson(req));
             this.user = null;
             this.clientSocket.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void connectToServer() {
-        // Socket(server ip, server port)
-        try {
-            // Socket(server ip, server port)
-            this.clientSocket = new Socket(Env.getServerIP(), Env.getPort());
-            this.output = clientSocket.getOutputStream();
-            this.writer = new PrintWriter(output, true);
-            this.inFromServer = clientSocket.getInputStream();
-            this.readInputFromServer = new BufferedReader(new InputStreamReader(inFromServer));
         } catch (Exception e) {
             e.printStackTrace();
         }
