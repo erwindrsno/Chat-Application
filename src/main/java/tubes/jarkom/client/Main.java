@@ -38,6 +38,10 @@ public class Main {
                         handleAddMember(input, client);
                         break;
 
+                    case "sendmessage":
+                        handleSendMessage(input,client);
+                        break;
+        
                     case "logout":
                         handleLogOut(client);
                         break;
@@ -96,6 +100,17 @@ public class Main {
         String roomName = input.readLine();
 
         client.addMember(memberName, roomName);
+    }
+
+    public static void handleSendMessage(BufferedReader input, IClient client) throws IOException{
+        System.out.println("==SEND MESSAGE==");
+        System.out.print("Message : ");
+        String message = input.readLine();
+
+        System.out.print("To room : ");
+        String roomName = input.readLine();
+
+        client.sendMessage(message, roomName);
     }
 
     public static void handleLogOut(IClient client) {

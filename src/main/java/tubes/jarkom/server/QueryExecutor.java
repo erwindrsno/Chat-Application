@@ -183,4 +183,37 @@ public class QueryExecutor implements IQueryExecutor {
             return null;
         }
     }
+
+    @Override
+    public void sendMessage(String chat, String roomName, int userId, String current) {
+        String sendMessageQuery = "INSERT INTO chats (chats, room_id, sender_id, time_stamp) VALUES (?,?,?,?)";
+        try {
+            PreparedStatement psSendMessage = this.connection.prepareStatement(sendMessageQuery,
+                    PreparedStatement.RETURN_GENERATED_KEYS);
+            psSendMessage.setString(1, chat);
+            psSendMessage.setInt(2, this.getRoomIdByRoomName(roomName));
+            psSendMessage.setInt(3, userId);
+            psSendMessage.setString(4,current);
+            int isInserted = psSendMessage.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getRoomIdByRoomName(String roomName){
+        String getRoomIdByRoomNameQuery = "SELECT id FROM rooms WHERE name = ?";
+        try{
+            PreparedStatement psGetRoomIdByRoomName = this.connection.prepareStatement(getRoomIdByRoomNameQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+            psGetRoomIdByRoomName.setString(1, roomName);
+            ResultSet rsGetRoomIdByRoomName = psGetRoomIdByRoomName.executeQuery();
+            if(rsGetRoomIdByRoomName.next()){
+                return rsGetRoomIdByRoomName.getInt("id");
+            }
+            return 0;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return 0;
+        }
+    }
 }

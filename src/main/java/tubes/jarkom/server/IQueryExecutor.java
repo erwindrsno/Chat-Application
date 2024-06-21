@@ -10,6 +10,7 @@ public interface IQueryExecutor {
     ResultSet checkOwnerQuery(String roomName, int userId);
     ResultSet getMemberIdQuery(String name);
     ResultSet getOwnedRoomQuery(int usersId);
+    void sendMessage(String chat, String roomName, int userId, String current);
     boolean checkDuplicatedNameQuery(String name, String username);
     boolean isMemberInsideQuery(int userId, int roomId);
     ResultSet listAllAvailableRooms();

@@ -16,6 +16,7 @@ import tubes.jarkom.response.Response;
 import tubes.jarkom.model.Room;
 import tubes.jarkom.model.User;
 import tubes.jarkom.model.UserRoom;
+import tubes.jarkom.model.Chat;
 
 public class Client implements IClient {
     private User user;
@@ -30,7 +31,7 @@ public class Client implements IClient {
         this.user = new User();
         this.gson = new Gson();
         this.connectToServer();
-        this.listenOnMessage();
+        // this.listenOnMessage();
     }
 
     public void connectToServer() {
@@ -122,9 +123,12 @@ public class Client implements IClient {
     }
 
     @Override
-    public void sendMessage() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'sendMessage'");
+    public void sendMessage(String message, String roomName) {
+        Request<String> req = new Request<>("sendMessage", gson.toJson(new Chat(message, roomName, this.user.getName())));
+
+        writer.println(gson.toJson(req));
+
+        String response = "";
     }
 
     @Override

@@ -5,6 +5,7 @@ import tubes.jarkom.model.Room;
 import tubes.jarkom.model.User;
 import tubes.jarkom.model.UserRoom;
 import tubes.jarkom.response.Response;
+import tubes.jarkom.model.Chat;
 
 import java.io.*;
 import java.net.*;
@@ -92,6 +93,10 @@ public class ClientHandler implements Runnable {
                         this.addMember(this.gson.fromJson(request.getData().toString(), UserRoom.class));
                         break;
 
+                    case "sendMessage":
+                        this.sendMessage(this.gson.fromJson(request.getData().toString(), Chat.class));;
+                        break;
+
                     case "logout":
                         this.logout();
                         break;
@@ -151,14 +156,14 @@ public class ClientHandler implements Runnable {
                 .toString();
 
         if(this.qe.checkDuplicatedNameQuery(this.user.getName(), this.user.getUsername())){
-            Response<String> res = new Response<>("Sorry, someone took that cool name or username, try another one!");
+            Response<String> res = new Response<>("400");
             writer.println(gson.toJson(res));
             return;
         }
 
         boolean isRegistered = this.qe.registerQuery(this.user.getName(), this.user.getUsername(), hashedPassword);
 
-        Response<String> res = isRegistered ? new Response<>("201") : new Response<>("failed");
+        Response<String> res = isRegistered ? new Response<>("201") : new Response<>("400");
         writer.println(gson.toJson(res));
     }
 
@@ -224,6 +229,16 @@ public class ClientHandler implements Runnable {
                 : new Response<>("500");
 
         writer.println(gson.toJson(res));
+    }
+
+    public void sendMessage(Chat message) throws Exception{
+        SimpleDateFormat ft = new SimpleDateFormat("dd-MM-yyyy");
+        String current = ft.format(new Date());
+
+        System.out.println("Message nya : " + message.getChats());
+        System.out.println("Kirim ke room : " + message.getRoom_name());
+
+        this.qe.sendMessage(message.getChats(), message.getRoom_name(), this.user.getId(), current);
     }
 
     public void logout() throws Exception {
