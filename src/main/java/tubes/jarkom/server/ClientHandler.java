@@ -97,6 +97,14 @@ public class ClientHandler implements Runnable {
                         this.sendMessage(this.gson.fromJson(request.getData().toString(), Chat.class));;
                         break;
 
+                    case "listAllRooms":
+                        this.listAllRooms();
+                        break;
+
+                    case "listAllMembersInTheRoom":
+                        this.listAllMembersInTheRoom(this.gson.fromJson(request.getData().toString(), Integer.class));
+                        break;
+
                     case "logout":
                         this.logout();
                         break;
@@ -245,6 +253,30 @@ public class ClientHandler implements Runnable {
         this.user.setIsLoggedIn(false);
 
         Response<String> res = new Response<>("log out succeed");
+
+        writer.println(gson.toJson(res));
+    }
+
+    public void listAllRooms() throws Exception{
+        System.out.println("masuk list all room");
+        ResultSet rs = this.qe.listAllAvailableRooms();
+        ArrayList<Room> alRoom = new ArrayList<>();
+        while(rs.next()){
+            alRoom.add(new Room(rs.getInt("id"), rs.getString("name"), this.qe.getUserNameById(rs.getInt("owner_id"))));
+        }
+        Response<ArrayList<Room>> res = new Response<>(alRoom);
+
+        writer.println(gson.toJson(res));
+    }
+
+    public void listAllMembersInTheRoom(Integer roomId) throws Exception{
+        System.out.println("room id nya adalah " + roomId);
+        ResultSet rs = this.qe.listAllMembersInTheRoom(roomId);
+        ArrayList<User> alUserPerRoom = new ArrayList<>();
+        while(rs.next()){
+            alUserPerRoom.add(new User(rs.getInt("id"), rs.getString("name")));
+        }
+        Response<ArrayList<User>> res = new Response<>(alUserPerRoom);
 
         writer.println(gson.toJson(res));
     }

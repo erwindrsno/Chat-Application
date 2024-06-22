@@ -127,8 +127,6 @@ public class Client implements IClient {
         Request<String> req = new Request<>("sendMessage", gson.toJson(new Chat(message, roomName, this.user.getName())));
 
         writer.println(gson.toJson(req));
-
-        String response = "";
     }
 
     @Override

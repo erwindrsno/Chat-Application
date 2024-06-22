@@ -216,4 +216,36 @@ public class QueryExecutor implements IQueryExecutor {
             return 0;
         }
     }
+
+    @Override
+    public String getUserNameById(int userId) {
+        String getUserNameByIdQuery = "SELECT name FROM users WHERE id = ?";
+        try{
+            PreparedStatement psGetUserNameById = this.connection.prepareStatement(getUserNameByIdQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+            psGetUserNameById.setInt(1, userId);
+            ResultSet rsGetUserNameById = psGetUserNameById.executeQuery();
+            if(rsGetUserNameById.next()){
+                return rsGetUserNameById.getString(1);
+            }
+            return null;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public ResultSet listAllMembersInTheRoom(Integer roomId) {
+        String listAllMembersInTheRoomQuery = "SELECT users.name, users.id FROM users LEFT JOIN users_rooms ON users.id = users_rooms.users_id WHERE users_rooms.rooms_id = ?";
+        try{
+            PreparedStatement psListAllMembersInTheRoom = this.connection.prepareStatement(listAllMembersInTheRoomQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+            psListAllMembersInTheRoom.setInt(1, roomId);
+            ResultSet rsListAllMembersInTheRoom = psListAllMembersInTheRoom.executeQuery();
+            return rsListAllMembersInTheRoom;
+        } catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

@@ -15,6 +15,11 @@ public class User{
         this.isLoggedIn = false;
     }
 
+    public User(Integer id, String name){
+        this.id = id;
+        this.name = name;
+    }
+
     public void setUsername(String username){
         this.username = username;
     }
