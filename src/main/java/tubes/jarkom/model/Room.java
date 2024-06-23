@@ -11,10 +11,11 @@ public class Room {
         this.owner = owner;
     }
 
-    public Room(int id, String name, String owner){
+    public Room(int id, String name, String owner, Integer owner_id){
         this.id = id;
         this.name = name;
         this.owner = owner;
+        this.owner_id = owner_id;
     }
 
     public Room(int id, int owner_id){

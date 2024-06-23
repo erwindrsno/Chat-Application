@@ -320,7 +320,9 @@ public class ClientHandler implements Runnable {
         ResultSet rs = this.qe.listAllAvailableRooms();
         ArrayList<Room> alRoom = new ArrayList<>();
         while (rs.next()) {
-            alRoom.add(new Room(rs.getInt("id"), rs.getString("name"), this.qe.getUserNameById(rs.getInt("owner_id"))));
+            Room room = new Room(rs.getInt("id"), rs.getString("name"), this.qe.getUserNameById(rs.getInt("owner_id")), rs.getInt("owner_id"));
+            // room.setOwner_id(rs.getInt("owner_id"));
+            alRoom.add(room);
         }
         Response<ArrayList<Room>> res = new Response<>(alRoom);
 
