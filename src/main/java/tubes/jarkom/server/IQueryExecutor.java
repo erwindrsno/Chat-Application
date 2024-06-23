@@ -16,4 +16,6 @@ public interface IQueryExecutor {
     boolean isMemberInsideQuery(int userId, int roomId);
     ResultSet listAllAvailableRooms();
     ResultSet listAllMembersInTheRoom(Integer roomId);
+    int getRoomIdByRoomName(String roomName);
+    ResultSet listAllChatsInTheRoom(Integer roomId);
 }

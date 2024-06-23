@@ -89,12 +89,25 @@ public class ClientHandler implements Runnable {
                         this.createRoom(this.gson.fromJson(request.getData().toString(), Room.class));
                         break;
 
-                    case "addMember":
-                        this.addMember(this.gson.fromJson(request.getData().toString(), UserRoom.class));
+                    // case "addMember":
+                    // this.addMember(this.gson.fromJson(request.getData().toString(),
+                    // UserRoom.class));
+                    // break;
+
+                    case "joinRoom":
+                        this.joinRoom(this.gson.fromJson(request.getData().toString(), UserRoom.class));
+                        break;
+
+                    case "isMemberInside":
+                        this.isMemberInside(this.gson.fromJson(request.getData().toString(), UserRoom.class));
                         break;
 
                     case "sendMessage":
-                        this.sendMessage(this.gson.fromJson(request.getData().toString(), Chat.class));;
+                        this.sendMessage(this.gson.fromJson(request.getData().toString(), Chat.class));
+                        break;
+
+                    case "listAllChatsInTheRoom":
+                        this.listAllChatsInTheRoom(this.gson.fromJson(request.getData().toString(), Integer.class));
                         break;
 
                     case "listAllRooms":
@@ -151,7 +164,7 @@ public class ClientHandler implements Runnable {
             } while (rsGetOwnedRoom.next());
         }
 
-        res = new Response<>("200");
+        res = new Response<>(rsLogin.getInt("id") + "");
 
         System.out.println(this.user.getName() + " has logged in");
 
@@ -163,7 +176,7 @@ public class ClientHandler implements Runnable {
                 .hashString(this.user.getPassword(), StandardCharsets.UTF_8)
                 .toString();
 
-        if(this.qe.checkDuplicatedNameQuery(this.user.getName(), this.user.getUsername())){
+        if (this.qe.checkDuplicatedNameQuery(this.user.getName(), this.user.getUsername())) {
             Response<String> res = new Response<>("400");
             writer.println(gson.toJson(res));
             return;
@@ -181,7 +194,7 @@ public class ClientHandler implements Runnable {
         int roomId = 0;
 
         if (this.isDuplicatedRoom(room.getName())) {
-            Response<String> res = new Response<>("Sorry, that is a duplicated room name, try another name!");
+            Response<String> res = new Response<>("500");
             writer.println(gson.toJson(res));
             return;
         }
@@ -196,7 +209,7 @@ public class ClientHandler implements Runnable {
 
         boolean hasJoinedRoom = this.qe.joinRoomQuery(this.user.getId(), roomId, current);
 
-        Response<String> res = hasJoinedRoom ? new Response<>(room.getName() + " has been created at " + current)
+        Response<String> res = hasJoinedRoom ? new Response<>("200")
                 : new Response<>("500");
 
         writer.println(gson.toJson(res));
@@ -224,7 +237,7 @@ public class ClientHandler implements Runnable {
             System.out.println("no member with this id");
         }
 
-        if(this.qe.isMemberInsideQuery(memberId, roomId)){
+        if (this.qe.isMemberInsideQuery(memberId, roomId)) {
             Response<String> res = new Response<>("Sorry, that guy is one of us already!");
             writer.println(gson.toJson(res));
             return;
@@ -239,12 +252,50 @@ public class ClientHandler implements Runnable {
         writer.println(gson.toJson(res));
     }
 
-    public void sendMessage(Chat message) throws Exception{
+    public void joinRoom(UserRoom userRoom) throws Exception {
+        SimpleDateFormat ft = new SimpleDateFormat("dd-MM-yyyy");
+        String current = ft.format(new Date());
+
+        int roomId = this.qe.getRoomIdByRoomName(userRoom.getRoomName());
+        int memberId = userRoom.getUserId();
+
+        // System.out.println("room id : " + roomId);
+        // System.out.println("member id : " + memberId);
+
+        if(this.qe.isMemberInsideQuery(memberId, roomId)){
+        Response<String> res = new Response<>("400");
+        writer.println(gson.toJson(res));
+        return;
+        }
+
+        boolean hasJoinedRoom = this.qe.joinRoomQuery(memberId, roomId, current);
+
+        Response<String> res = hasJoinedRoom
+        ? new Response<>("200")
+        : new Response<>("500");
+
+        writer.println(gson.toJson(res));
+    }
+
+    public void isMemberInside(UserRoom userRoom) {
+        // System.out.println("userid nyaaa : " + userRoom.getUserId());
+        // System.out.println("roomid nyaaa : " + userRoom.getId());
+        // this.qe.isMemberInsideQuery(userRoom.getUserId(), userRoom.getId());
+
+        Response<Boolean> res = this.qe.isMemberInsideQuery(userRoom.getUserId(), userRoom.getId())
+                ? new Response<>(true)
+                : new Response<>(false);
+
+        writer.println(gson.toJson(res));
+    }
+
+    public void sendMessage(Chat message) throws Exception {
         SimpleDateFormat ft = new SimpleDateFormat("dd-MM-yyyy");
         String current = ft.format(new Date());
 
         System.out.println("Message nya : " + message.getChats());
         System.out.println("Kirim ke room : " + message.getRoom_name());
+        System.out.println("user id nya itu : " + this.user.getId());
 
         this.qe.sendMessage(message.getChats(), message.getRoom_name(), this.user.getId(), current);
     }
@@ -257,11 +308,11 @@ public class ClientHandler implements Runnable {
         writer.println(gson.toJson(res));
     }
 
-    public void listAllRooms() throws Exception{
+    public void listAllRooms() throws Exception {
         System.out.println("masuk list all room");
         ResultSet rs = this.qe.listAllAvailableRooms();
         ArrayList<Room> alRoom = new ArrayList<>();
-        while(rs.next()){
+        while (rs.next()) {
             alRoom.add(new Room(rs.getInt("id"), rs.getString("name"), this.qe.getUserNameById(rs.getInt("owner_id"))));
         }
         Response<ArrayList<Room>> res = new Response<>(alRoom);
@@ -269,14 +320,29 @@ public class ClientHandler implements Runnable {
         writer.println(gson.toJson(res));
     }
 
-    public void listAllMembersInTheRoom(Integer roomId) throws Exception{
-        System.out.println("room id nya adalah " + roomId);
+    public void listAllMembersInTheRoom(Integer roomId) throws Exception {
         ResultSet rs = this.qe.listAllMembersInTheRoom(roomId);
         ArrayList<User> alUserPerRoom = new ArrayList<>();
-        while(rs.next()){
+        while (rs.next()) {
             alUserPerRoom.add(new User(rs.getInt("id"), rs.getString("name")));
         }
         Response<ArrayList<User>> res = new Response<>(alUserPerRoom);
+
+        writer.println(gson.toJson(res));
+    }
+
+    public void listAllChatsInTheRoom(Integer roomId) throws Exception{
+        ResultSet rs = this.qe.listAllChatsInTheRoom(roomId);
+        ArrayList<Chat> alChatPerRoom = new ArrayList<>();
+        while(rs.next()){
+            alChatPerRoom.add(new Chat(rs.getString("chats"), rs.getString("name"), rs.getInt("id")));
+            // System.out.println(rs.getString("chats"));
+            // System.out.println(rs.getString("name"));
+        }
+        // Response<ArrayList<Chat>> res = new Response<>(alChatPerRoom);
+        String strAlChatPerRoom = gson.toJson(alChatPerRoom);
+
+        Response<String> res = new Response<>(strAlChatPerRoom);
 
         writer.println(gson.toJson(res));
     }

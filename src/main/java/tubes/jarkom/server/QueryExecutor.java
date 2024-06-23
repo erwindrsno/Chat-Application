@@ -200,6 +200,7 @@ public class QueryExecutor implements IQueryExecutor {
         }
     }
 
+    @Override
     public int getRoomIdByRoomName(String roomName){
         String getRoomIdByRoomNameQuery = "SELECT id FROM rooms WHERE name = ?";
         try{
@@ -243,6 +244,20 @@ public class QueryExecutor implements IQueryExecutor {
             psListAllMembersInTheRoom.setInt(1, roomId);
             ResultSet rsListAllMembersInTheRoom = psListAllMembersInTheRoom.executeQuery();
             return rsListAllMembersInTheRoom;
+        } catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public ResultSet listAllChatsInTheRoom(Integer roomId) {
+        String listAllChatsInTheRoomQuery = "SELECT chats.chats, users.name, users.id FROM chats LEFT JOIN users ON chats.sender_id = users.id WHERE chats.room_id=?";
+        try{
+            PreparedStatement psListAllChatsInTheRoom = this.connection.prepareStatement(listAllChatsInTheRoomQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+            psListAllChatsInTheRoom.setInt(1, roomId);
+            ResultSet rsListAllChatsInTheRoom = psListAllChatsInTheRoom.executeQuery();
+            return rsListAllChatsInTheRoom;
         } catch(Exception e){
             e.printStackTrace();
             return null;

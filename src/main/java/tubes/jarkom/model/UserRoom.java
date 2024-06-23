@@ -2,12 +2,23 @@ package tubes.jarkom.model;
 
 public class UserRoom {
     private Integer id;
+    private Integer userId;
     private String memberName;
     private String roomName;
     
     public UserRoom(String memberName, String roomName){
         this.memberName = memberName;
         this.roomName = roomName;
+    }
+
+    public UserRoom(Integer userId, String roomName){
+        this.userId = userId;
+        this.roomName = roomName;
+    }
+
+    public UserRoom(Integer userId, Integer id){
+        this.userId = userId;
+        this.id = id;
     }
 
     public Integer getId() {
@@ -32,5 +43,13 @@ public class UserRoom {
 
     public String getRoomName(){
         return this.roomName;
+    }
+
+    public Integer getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 }
