@@ -18,7 +18,6 @@ public class Server {
 
                 Thread clientHandler = new Thread(new ClientHandler(connectionSocket), "Client " + clientCount);
                 clientHandler.start();
-
             }
         }
         catch(Exception e){

@@ -263,4 +263,39 @@ public class QueryExecutor implements IQueryExecutor {
             return null;
         }
     }
+
+    @Override
+    public boolean kickMember(Integer memberId, Integer roomId) {
+        String kickMemberQuery = "DELETE FROM users_rooms WHERE users_id = ?  AND rooms_id = ?";
+        try{
+            PreparedStatement psKickMember = this.connection.prepareStatement(kickMemberQuery,
+            PreparedStatement.RETURN_GENERATED_KEYS);
+            psKickMember.setInt(1, memberId);
+            psKickMember.setInt(2, roomId);
+            int rsCheckOwner = psKickMember.executeUpdate();
+            if(rsCheckOwner > 0){
+                return true;
+            }
+            return false;
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public ResultSet checkOwnerQuery(Integer roomId, Integer userId) {
+        String checkOwnerQuery = "SELECT * FROM rooms WHERE id = ? && owner_id = ? ";
+        try {
+            PreparedStatement psCheckOwner = this.connection.prepareStatement(checkOwnerQuery,
+                    PreparedStatement.RETURN_GENERATED_KEYS);
+            psCheckOwner.setInt(1, roomId);
+            psCheckOwner.setInt(2, userId);
+            ResultSet rsCheckOwner = psCheckOwner.executeQuery();
+            return rsCheckOwner;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

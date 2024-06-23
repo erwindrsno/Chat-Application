@@ -4,7 +4,8 @@ public class Room {
     private int id;
     private String name;
     private String owner;
-    
+    private Integer owner_id;
+
     public Room(String name, String owner){
         this.name = name;
         this.owner = owner;
@@ -14,6 +15,11 @@ public class Room {
         this.id = id;
         this.name = name;
         this.owner = owner;
+    }
+
+    public Room(int id, int owner_id){
+        this.id = id;
+        this.owner_id = owner_id;
     }
 
     public void setName(String name){
@@ -38,5 +44,13 @@ public class Room {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Integer getOwner_id() {
+        return owner_id;
+    }
+
+    public void setOwner_id(Integer owner_id) {
+        this.owner_id = owner_id;
     }
 }

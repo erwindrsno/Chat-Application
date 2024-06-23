@@ -102,6 +102,14 @@ public class ClientHandler implements Runnable {
                         this.isMemberInside(this.gson.fromJson(request.getData().toString(), UserRoom.class));
                         break;
 
+                    case "isOwnerOfTheRoom":
+                        this.isOwnerOfTheRoom(this.gson.fromJson(request.getData().toString(), Room.class));
+                        break;
+
+                    case "kickMember":
+                        this.kickMember(this.gson.fromJson(request.getData().toString(), UserRoom.class));
+                        break;
+
                     case "sendMessage":
                         this.sendMessage(this.gson.fromJson(request.getData().toString(), Chat.class));
                         break;
@@ -262,17 +270,17 @@ public class ClientHandler implements Runnable {
         // System.out.println("room id : " + roomId);
         // System.out.println("member id : " + memberId);
 
-        if(this.qe.isMemberInsideQuery(memberId, roomId)){
-        Response<String> res = new Response<>("400");
-        writer.println(gson.toJson(res));
-        return;
+        if (this.qe.isMemberInsideQuery(memberId, roomId)) {
+            Response<String> res = new Response<>("400");
+            writer.println(gson.toJson(res));
+            return;
         }
 
         boolean hasJoinedRoom = this.qe.joinRoomQuery(memberId, roomId, current);
 
         Response<String> res = hasJoinedRoom
-        ? new Response<>("200")
-        : new Response<>("500");
+                ? new Response<>("200")
+                : new Response<>("500");
 
         writer.println(gson.toJson(res));
     }
@@ -309,7 +317,6 @@ public class ClientHandler implements Runnable {
     }
 
     public void listAllRooms() throws Exception {
-        System.out.println("masuk list all room");
         ResultSet rs = this.qe.listAllAvailableRooms();
         ArrayList<Room> alRoom = new ArrayList<>();
         while (rs.next()) {
@@ -331,10 +338,10 @@ public class ClientHandler implements Runnable {
         writer.println(gson.toJson(res));
     }
 
-    public void listAllChatsInTheRoom(Integer roomId) throws Exception{
+    public void listAllChatsInTheRoom(Integer roomId) throws Exception {
         ResultSet rs = this.qe.listAllChatsInTheRoom(roomId);
         ArrayList<Chat> alChatPerRoom = new ArrayList<>();
-        while(rs.next()){
+        while (rs.next()) {
             alChatPerRoom.add(new Chat(rs.getString("chats"), rs.getString("name"), rs.getInt("id")));
             // System.out.println(rs.getString("chats"));
             // System.out.println(rs.getString("name"));
@@ -344,6 +351,27 @@ public class ClientHandler implements Runnable {
 
         Response<String> res = new Response<>(strAlChatPerRoom);
 
+        writer.println(gson.toJson(res));
+    }
+
+    public void kickMember(UserRoom userRoom) throws Exception {
+        // System.out.println("to be kick id : " + userRoom.getUserId());
+        // System.out.println("room : " + userRoom.getId());
+        // boolean hasKicked = this.qe.kickMember(userRoom.getUserId(),
+        // userRoom.getId());
+        Response<Boolean> res = this.qe.kickMember(userRoom.getUserId(), userRoom.getId()) ? new Response<>(true)
+                : new Response<>(false);
+        writer.println(gson.toJson(res));
+    }
+
+    public void isOwnerOfTheRoom(Room room) throws Exception {
+        ResultSet rs = this.qe.checkOwnerQuery(room.getId(), room.getOwner_id());
+        while (rs.next()) {
+            Response<Boolean> res = new Response<>(true);
+            writer.println(gson.toJson(res));
+            return;
+        }
+        Response<Boolean> res = new Response<>(false);
         writer.println(gson.toJson(res));
     }
 
