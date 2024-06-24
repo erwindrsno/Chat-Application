@@ -38,18 +38,6 @@ CREATE TABLE `rooms` (
 -- Dumping data for table `rooms`
 --
 
-INSERT INTO `rooms` (`id`, `name`, `owner_id`, `created_at`) VALUES
-(1, 'discord', 7, 'test12345'),
-(2, 'jarkom', 7, '04-06-2024'),
-(3, 'cyberops', 7, '04-06-2024'),
-(5, 'concert', 12, '04-06-2024'),
-(9, 'mcdonald', 18, '04-06-2024'),
-(10, 'rafif_room', 19, '05-06-2024'),
-(11, 'Chat room', 20, '05-06-2024'),
-(12, 'roombebas', 21, '05-06-2024'),
-(13, 'name room', 22, '05-06-2024'),
-(14, 'daryl room', 23, '05-06-2024');
-
 --
 -- Indexes for dumped tables
 --

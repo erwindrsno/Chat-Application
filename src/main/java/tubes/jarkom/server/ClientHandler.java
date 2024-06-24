@@ -320,11 +320,10 @@ public class ClientHandler implements Runnable {
         ResultSet rs = this.qe.listAllAvailableRooms();
         ArrayList<Room> alRoom = new ArrayList<>();
         while (rs.next()) {
-            Room room = new Room(rs.getInt("id"), rs.getString("name"), this.qe.getUserNameById(rs.getInt("owner_id")), rs.getInt("owner_id"));
-            // room.setOwner_id(rs.getInt("owner_id"));
-            alRoom.add(room);
+            alRoom.add(new Room(rs.getInt("id"), rs.getString("name"), this.qe.getUserNameById(rs.getInt("owner_id")), rs.getInt("owner_id")));
         }
-        Response<ArrayList<Room>> res = new Response<>(alRoom);
+        String strAlRoom = gson.toJson(alRoom);
+        Response<String> res = new Response<>(strAlRoom);
 
         writer.println(gson.toJson(res));
     }
@@ -335,7 +334,8 @@ public class ClientHandler implements Runnable {
         while (rs.next()) {
             alUserPerRoom.add(new User(rs.getInt("id"), rs.getString("name")));
         }
-        Response<ArrayList<User>> res = new Response<>(alUserPerRoom);
+        String strAlUserPerRoom = gson.toJson(alUserPerRoom);
+        Response<String> res = new Response<>(strAlUserPerRoom);
 
         writer.println(gson.toJson(res));
     }
@@ -345,12 +345,8 @@ public class ClientHandler implements Runnable {
         ArrayList<Chat> alChatPerRoom = new ArrayList<>();
         while (rs.next()) {
             alChatPerRoom.add(new Chat(rs.getString("chats"), rs.getString("name"), rs.getInt("id")));
-            // System.out.println(rs.getString("chats"));
-            // System.out.println(rs.getString("name"));
         }
-        // Response<ArrayList<Chat>> res = new Response<>(alChatPerRoom);
         String strAlChatPerRoom = gson.toJson(alChatPerRoom);
-
         Response<String> res = new Response<>(strAlChatPerRoom);
 
         writer.println(gson.toJson(res));
